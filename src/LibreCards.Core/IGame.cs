@@ -11,6 +11,7 @@ namespace LibreCards.Core
         void AddPlayer(Player player);
         void RemovePlayer(Guid id);
         int PlayerCount { get; }
+        IEnumerable<Player> GetPlayers();
         int MinimumPlayerCount { get; }
         int MaximumPlayerCount { get; }
         void SetMaxPlayerCount(int maxPlayerCount);

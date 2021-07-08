@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31423.177
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibreCards.Tests", "LibreCards.Tests\LibreCards.Tests.csproj", "{F5C42DE8-5CD1-438A-852E-2E28EB81D1C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibreCards.Tests", "LibreCards.Tests\LibreCards.Tests.csproj", "{F5C42DE8-5CD1-438A-852E-2E28EB81D1C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibreCards.Core", "LibreCards.Core\LibreCards.Core.csproj", "{85333071-7F6A-4EB4-8277-BEDC4E310AAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibreCards.Core", "LibreCards.Core\LibreCards.Core.csproj", "{85333071-7F6A-4EB4-8277-BEDC4E310AAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibreCards.WebApp", "LibreCards.WebApp\LibreCards.WebApp.csproj", "{58227ACB-2E48-4A4F-8BD4-A502ED7B8639}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibreCards.ConsoleApp", "LibreCards.ConsoleApp\LibreCards.ConsoleApp.csproj", "{20D4BE2E-96CC-4AFA-87B3-8045E995D3B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F5C42DE8-5CD1-438A-852E-2E28EB81D1C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -44,5 +45,35 @@ Global
 		{85333071-7F6A-4EB4-8277-BEDC4E310AAF}.Release|x64.Build.0 = Release|Any CPU
 		{85333071-7F6A-4EB4-8277-BEDC4E310AAF}.Release|x86.ActiveCfg = Release|Any CPU
 		{85333071-7F6A-4EB4-8277-BEDC4E310AAF}.Release|x86.Build.0 = Release|Any CPU
+		{58227ACB-2E48-4A4F-8BD4-A502ED7B8639}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58227ACB-2E48-4A4F-8BD4-A502ED7B8639}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58227ACB-2E48-4A4F-8BD4-A502ED7B8639}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{58227ACB-2E48-4A4F-8BD4-A502ED7B8639}.Debug|x64.Build.0 = Debug|Any CPU
+		{58227ACB-2E48-4A4F-8BD4-A502ED7B8639}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{58227ACB-2E48-4A4F-8BD4-A502ED7B8639}.Debug|x86.Build.0 = Debug|Any CPU
+		{58227ACB-2E48-4A4F-8BD4-A502ED7B8639}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58227ACB-2E48-4A4F-8BD4-A502ED7B8639}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58227ACB-2E48-4A4F-8BD4-A502ED7B8639}.Release|x64.ActiveCfg = Release|Any CPU
+		{58227ACB-2E48-4A4F-8BD4-A502ED7B8639}.Release|x64.Build.0 = Release|Any CPU
+		{58227ACB-2E48-4A4F-8BD4-A502ED7B8639}.Release|x86.ActiveCfg = Release|Any CPU
+		{58227ACB-2E48-4A4F-8BD4-A502ED7B8639}.Release|x86.Build.0 = Release|Any CPU
+		{20D4BE2E-96CC-4AFA-87B3-8045E995D3B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20D4BE2E-96CC-4AFA-87B3-8045E995D3B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20D4BE2E-96CC-4AFA-87B3-8045E995D3B9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{20D4BE2E-96CC-4AFA-87B3-8045E995D3B9}.Debug|x64.Build.0 = Debug|Any CPU
+		{20D4BE2E-96CC-4AFA-87B3-8045E995D3B9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{20D4BE2E-96CC-4AFA-87B3-8045E995D3B9}.Debug|x86.Build.0 = Debug|Any CPU
+		{20D4BE2E-96CC-4AFA-87B3-8045E995D3B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20D4BE2E-96CC-4AFA-87B3-8045E995D3B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20D4BE2E-96CC-4AFA-87B3-8045E995D3B9}.Release|x64.ActiveCfg = Release|Any CPU
+		{20D4BE2E-96CC-4AFA-87B3-8045E995D3B9}.Release|x64.Build.0 = Release|Any CPU
+		{20D4BE2E-96CC-4AFA-87B3-8045E995D3B9}.Release|x86.ActiveCfg = Release|Any CPU
+		{20D4BE2E-96CC-4AFA-87B3-8045E995D3B9}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1ACC88C3-DFCE-4CD4-BABB-5B9C24CC7866}
 	EndGlobalSection
 EndGlobal

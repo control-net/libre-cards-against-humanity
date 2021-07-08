@@ -33,6 +33,8 @@ namespace LibreCards.Core
             Players.Add(player);
         }
 
+        public IEnumerable<Player> GetPlayers() => Players;
+
         public void RemovePlayer(Guid id)
         {
             var player = Players.FirstOrDefault(p => p.Id == id);
