@@ -7,10 +7,16 @@ namespace LibreCards.Core
 {
     public class Game : IGame
     {
-        public Game(int minimumPlayerCount)
+        private Guid _judgePlayer;
+        private Queue<Guid> _judgeQueue;
+        
+        private readonly ICardRepository _cardRepository;
+
+        public Game(int minimumPlayerCount, ICardRepository cardRepository)
         {
             MinimumPlayerCount = minimumPlayerCount;
             MaximumPlayerCount = 10;
+            _cardRepository = cardRepository;
         }
 
         public GameState State { get; private set; }
@@ -68,6 +74,38 @@ namespace LibreCards.Core
                 throw new InvalidOperationException("Not enough players.");
 
             State = GameState.InProgress;
+            SetupJudgeQueue();
+            SetupNewRound();
+        }
+
+        private void SetupNewRound()
+        {
+            if(_judgeQueue.Count == 0)
+                SetupJudgeQueue();
+            
+            if(_judgeQueue.Count != 0)
+                _judgePlayer = _judgeQueue.Dequeue();
+
+            foreach(var player in Players)
+            {
+                var playerCards = player.Cards.ToList();
+                var cards = _cardRepository.DrawCards(8 - player.Cards.Count);
+                playerCards.AddRange(cards);
+                player.Cards = playerCards;
+            }
+        }
+
+        private void SetupJudgeQueue()
+            => _judgeQueue = new Queue<Guid>(Players.Select(p => p.Id).Reverse());
+
+        public Player GetPlayer(Guid id)
+        {
+            var player = Players.FirstOrDefault(p => p.Id == id);
+
+            if(player is null)
+                throw new InvalidOperationException($"No player with id '{id}' found.");
+
+            return player;
         }
     }
 }

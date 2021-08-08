@@ -10,6 +10,7 @@ namespace LibreCards.Core
         void StartGame();
         void AddPlayer(Player player);
         void RemovePlayer(Guid id);
+        Player GetPlayer(Guid id);
         int PlayerCount { get; }
         IEnumerable<Player> GetPlayers();
         int MinimumPlayerCount { get; }
