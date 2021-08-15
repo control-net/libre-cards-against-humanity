@@ -10,12 +10,14 @@ namespace LibreCards.Tests
         private IGame _game;
         private ICardRepository _cardRepo;
         private IGameStatus _gameStatus;
+        private ILobby _lobby;
 
         public GameTests()
         {
             _cardRepo = new MockCardRepository();
             _gameStatus = new GameStatus();
-            _game = new Game(0, _gameStatus, _cardRepo);
+            _lobby = new Lobby(0, _gameStatus);
+            _game = new Game(_gameStatus, _cardRepo, _lobby);
         }
 
         [Fact]
@@ -23,27 +25,27 @@ namespace LibreCards.Tests
         {
             _game.StartGame();
 
-            Assert.Throws<InvalidOperationException>(() => _game.AddPlayer(new Player(Guid.NewGuid())));
+            Assert.Throws<InvalidOperationException>(() => _game.Lobby.AddPlayer(new Player(Guid.NewGuid())));
         }
 
         [Fact]
         public void WhenGameIsNotInProgress_PlayersCanJoin()
         {
-            _game.AddPlayer(new Player(Guid.NewGuid()));
+            _game.Lobby.AddPlayer(new Player(Guid.NewGuid()));
 
-            Assert.Equal(1, _game.PlayerCount);
+            Assert.Equal(1, _game.Lobby.PlayerCount);
         }
 
         [Fact]
         public void NewGame_HasNoPlayers()
         {
-            Assert.Equal(0, _game.PlayerCount);
+            Assert.Equal(0, _game.Lobby.PlayerCount);
         }
 
         [Fact]
         public void NotEnoughPlayers_CannotStartGame()
         {
-            _game = new Game(1, _gameStatus, _cardRepo);
+            ArrangeGameWithMinPlayers(1);
 
             Assert.Throws<InvalidOperationException>(() => _game.StartGame());
         }
@@ -51,25 +53,25 @@ namespace LibreCards.Tests
         [Fact]
         public void CannotSetMaximumPlayerCountLowerThanMinimum()
         {
-            _game = new Game(2, _gameStatus, _cardRepo);
+            ArrangeGameWithMinPlayers(2);
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => _game.SetMaxPlayerCount(1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => _game.Lobby.SetMaxPlayerCount(1));
         }
 
         [Fact]
         public void CannotSetZeroMaxPlayerCount()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => _game.SetMaxPlayerCount(0));
+            Assert.Throws<ArgumentOutOfRangeException>(() => _game.Lobby.SetMaxPlayerCount(0));
         }
 
         [Fact]
         public void RemovingNonExistentPlayerDoesNothing()
         {
-            _game.AddPlayer(new Player(Guid.NewGuid()));
+            _game.Lobby.AddPlayer(new Player(Guid.NewGuid()));
 
-            _game.RemovePlayer(Guid.NewGuid());
+            _game.Lobby.RemovePlayer(Guid.NewGuid());
 
-            Assert.Equal(1, _game.PlayerCount);
+            Assert.Equal(1, _game.Lobby.PlayerCount);
         }
 
         [Fact]
@@ -77,12 +79,12 @@ namespace LibreCards.Tests
         {
             var id = Guid.NewGuid();
 
-            _game.AddPlayer(new Player(id));
-            _game.AddPlayer(new Player(Guid.NewGuid()));
+            _game.Lobby.AddPlayer(new Player(id));
+            _game.Lobby.AddPlayer(new Player(Guid.NewGuid()));
 
-            _game.RemovePlayer(id);
+            _game.Lobby.RemovePlayer(id);
 
-            Assert.Equal(1, _game.PlayerCount);
+            Assert.Equal(1, _game.Lobby.PlayerCount);
         }
 
         [Fact]
@@ -90,17 +92,17 @@ namespace LibreCards.Tests
         {
             _game.StartGame();
 
-            Assert.Throws<InvalidOperationException>(() => _game.SetMaxPlayerCount(10));
+            Assert.Throws<InvalidOperationException>(() => _game.Lobby.SetMaxPlayerCount(10));
         }
 
         [Fact]
         public void NewGame_PlayerShouldGetCards()
         {
             var playerId = Guid.NewGuid();
-            _game.AddPlayer(new Player(playerId));
+            _game.Lobby.AddPlayer(new Player(playerId));
             _game.StartGame();
 
-            var player = _game.GetPlayer(playerId);
+            var player = _game.Lobby.GetPlayer(playerId);
 
             Assert.NotEmpty(player.Cards);
         }
@@ -108,29 +110,35 @@ namespace LibreCards.Tests
         [Fact(Skip = "Exploration test")]
         public void ExplorationTest()
         {
-            _game = new Game(4, _gameStatus, _cardRepo);
+            ArrangeGameWithMinPlayers(4);
 
             Assert.Throws<InvalidOperationException>(() => _game.StartGame());
 
             var id = Guid.NewGuid();
 
-            _game.AddPlayer(new Player(id));
-            _game.AddPlayer(new Player(Guid.NewGuid()));
-            _game.AddPlayer(new Player(Guid.NewGuid()));
-            _game.AddPlayer(new Player(Guid.NewGuid()));
+            _game.Lobby.AddPlayer(new Player(id));
+            _game.Lobby.AddPlayer(new Player(Guid.NewGuid()));
+            _game.Lobby.AddPlayer(new Player(Guid.NewGuid()));
+            _game.Lobby.AddPlayer(new Player(Guid.NewGuid()));
 
             _game.StartGame();
 
-            Assert.Throws<InvalidOperationException>(() => _game.AddPlayer(new Player(Guid.NewGuid())));
+            Assert.Throws<InvalidOperationException>(() => _game.Lobby.AddPlayer(new Player(Guid.NewGuid())));
 
-            _game.RemovePlayer(id);
+            _game.Lobby.RemovePlayer(id);
 
-            Assert.Equal(3, _game.PlayerCount);
+            Assert.Equal(3, _game.Lobby.PlayerCount);
             Assert.False(_gameStatus.IsInProgress);
 
-            _game.AddPlayer(new Player(Guid.NewGuid()));
-            _game.AddPlayer(new Player(Guid.NewGuid()));
+            _game.Lobby.AddPlayer(new Player(Guid.NewGuid()));
+            _game.Lobby.AddPlayer(new Player(Guid.NewGuid()));
             _game.StartGame();
+        }
+
+        private void ArrangeGameWithMinPlayers(int minPlayers)
+        {
+            _lobby = new Lobby(minPlayers, _gameStatus);
+            _game = new Game(_gameStatus, _cardRepo, _lobby);
         }
     }
 }

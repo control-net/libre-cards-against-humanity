@@ -13,7 +13,9 @@ namespace LibreCards.WebApp.Hubs
 
         public GameHub()
         {
-            _game = new Game(2, null);
+            var gameStatus = new GameStatus();
+            var lobby = new Lobby(2, gameStatus);
+            _game = new Game(gameStatus, null, lobby);
         }
 
         public async Task Join()
@@ -23,19 +25,19 @@ namespace LibreCards.WebApp.Hubs
             await Clients.Others.SendAsync("PlayerJoined", id);
             await Clients.Caller.SendAsync("IdAssigned", id);
 
-            _game.AddPlayer(new Player(id));
+            _game.Lobby.AddPlayer(new Player(id));
         }
 
         public async Task Leave(Guid id)
         {
-            _game.RemovePlayer(id);
+            _game.Lobby.RemovePlayer(id);
 
             await Clients.Others.SendAsync("PlayerLeft", id);
         }
 
         public async Task GetPlayers()
         {
-            await Clients.Caller.SendAsync("PlayerList", _game.GetPlayers().Select(p => p.Id));
+            await Clients.Caller.SendAsync("PlayerList", _game.Lobby.GetPlayers().Select(p => p.Id));
         }
     }
 }
