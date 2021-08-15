@@ -6,7 +6,6 @@ namespace LibreCards.Core
 {
     public interface IGame
     {
-        GameState State { get; }
         void StartGame();
         void AddPlayer(Player player);
         void RemovePlayer(Guid id);

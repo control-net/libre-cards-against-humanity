@@ -10,16 +10,16 @@ namespace LibreCards.Core
         private Guid _judgePlayer;
         private Queue<Guid> _judgeQueue;
         
+        private readonly IGameStatus _gameStatus;
         private readonly ICardRepository _cardRepository;
 
-        public Game(int minimumPlayerCount, ICardRepository cardRepository)
+        public Game(int minimumPlayerCount, IGameStatus gameStatus, ICardRepository cardRepository)
         {
             MinimumPlayerCount = minimumPlayerCount;
             MaximumPlayerCount = 10;
+            _gameStatus = gameStatus;
             _cardRepository = cardRepository;
         }
-
-        public GameState State { get; private set; }
 
         public int MinimumPlayerCount { get; private set; }
 
@@ -31,10 +31,8 @@ namespace LibreCards.Core
 
         public void AddPlayer(Player player)
         {
-            if(State == GameState.InProgress)
-            {
+            if(_gameStatus.IsInProgress)
                 throw new InvalidOperationException();
-            }
 
             Players.Add(player);
         }
@@ -50,13 +48,13 @@ namespace LibreCards.Core
 
             Players.Remove(player);
 
-            if(PlayerCount < MaximumPlayerCount)
-                State = GameState.Waiting;
+            if (PlayerCount < MaximumPlayerCount)
+                _gameStatus.SetWaiting();
         }
 
         public void SetMaxPlayerCount(int maxPlayerCount)
         {
-            if(State == GameState.InProgress)
+            if(_gameStatus.IsInProgress)
                 throw new InvalidOperationException();
 
             if(maxPlayerCount == 0 || maxPlayerCount < MinimumPlayerCount)
@@ -67,13 +65,13 @@ namespace LibreCards.Core
 
         public void StartGame()
         {
-            if (State == GameState.InProgress)
+            if (_gameStatus.IsInProgress)
                 return;
 
             if(PlayerCount < MinimumPlayerCount)
                 throw new InvalidOperationException("Not enough players.");
 
-            State = GameState.InProgress;
+            _gameStatus.SetInProgress();
             SetupJudgeQueue();
             SetupNewRound();
         }

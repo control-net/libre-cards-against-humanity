@@ -9,11 +9,13 @@ namespace LibreCards.Tests
     {
         private IGame _game;
         private ICardRepository _cardRepo;
+        private IGameStatus _gameStatus;
 
         public GameTests()
         {
             _cardRepo = new MockCardRepository();
-            _game = new Game(0, _cardRepo);
+            _gameStatus = new GameStatus();
+            _game = new Game(0, _gameStatus, _cardRepo);
         }
 
         [Fact]
@@ -41,7 +43,7 @@ namespace LibreCards.Tests
         [Fact]
         public void NotEnoughPlayers_CannotStartGame()
         {
-            _game = new Game(1, _cardRepo);
+            _game = new Game(1, _gameStatus, _cardRepo);
 
             Assert.Throws<InvalidOperationException>(() => _game.StartGame());
         }
@@ -49,7 +51,7 @@ namespace LibreCards.Tests
         [Fact]
         public void CannotSetMaximumPlayerCountLowerThanMinimum()
         {
-            _game = new Game(2, _cardRepo);
+            _game = new Game(2, _gameStatus, _cardRepo);
 
             Assert.Throws<ArgumentOutOfRangeException>(() => _game.SetMaxPlayerCount(1));
         }
@@ -106,7 +108,7 @@ namespace LibreCards.Tests
         [Fact(Skip = "Exploration test")]
         public void ExplorationTest()
         {
-            _game = new Game(4, _cardRepo);
+            _game = new Game(4, _gameStatus, _cardRepo);
 
             Assert.Throws<InvalidOperationException>(() => _game.StartGame());
 
@@ -124,7 +126,7 @@ namespace LibreCards.Tests
             _game.RemovePlayer(id);
 
             Assert.Equal(3, _game.PlayerCount);
-            Assert.Equal(GameState.Waiting, _game.State);
+            Assert.False(_gameStatus.IsInProgress);
 
             _game.AddPlayer(new Player(Guid.NewGuid()));
             _game.AddPlayer(new Player(Guid.NewGuid()));
