@@ -13,7 +13,7 @@ namespace LibreCards.WebApp.Hubs
 
         public GameHub()
         {
-            _game = new Game(2);
+            _game = new Game(2, null);
         }
 
         public async Task Join()
