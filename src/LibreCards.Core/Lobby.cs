@@ -35,7 +35,7 @@ namespace LibreCards.Core
             Players.Add(player);
         }
 
-        public IEnumerable<Player> GetPlayers() => Players;
+        public IEnumerable<Player> Players => Players;
 
         public void RemovePlayer(Guid id)
         {
