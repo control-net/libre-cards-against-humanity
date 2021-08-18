@@ -32,7 +32,7 @@ namespace LibreCards.Core
             if (_gameStatus.IsInProgress)
                 throw new InvalidOperationException();
 
-            Players.Add(player);
+            _players.Add(player);
         }
 
         public IEnumerable<Player> Players => _players;
@@ -44,7 +44,7 @@ namespace LibreCards.Core
             if (player is null)
                 return;
 
-            Players.Remove(player);
+            _players.Remove(player);
 
             if (PlayerCount < MaximumPlayerCount)
                 _gameStatus.SetWaiting();
