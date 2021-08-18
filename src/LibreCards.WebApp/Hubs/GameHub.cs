@@ -37,7 +37,7 @@ namespace LibreCards.WebApp.Hubs
 
         public async Task GetPlayers()
         {
-            await Clients.Caller.SendAsync("PlayerList", _game.Lobby.GetPlayers().Select(p => p.Id));
+            await Clients.Caller.SendAsync("PlayerList", _game.Lobby.Players.Select(p => p.Id));
         }
     }
 }
