@@ -21,9 +21,9 @@ namespace LibreCards.Core
 
         public int MaximumPlayerCount { get; private set; }
 
-        public int PlayerCount => Players.Count;
+        public int PlayerCount => _players.Count;
 
-        public ICollection<Player> Players { get; set; } = new List<Player>();
+        private ICollection<Player> _players = new List<Player>();
 
         public bool HasEnoughPlayers => PlayerCount >= MinimumPlayerCount;
 
@@ -32,10 +32,10 @@ namespace LibreCards.Core
             if (_gameStatus.IsInProgress)
                 throw new InvalidOperationException();
 
-            Players.Add(player);
+            _players.Add(player);
         }
 
-        public IEnumerable<Player> GetPlayers() => Players;
+        public IEnumerable<Player> Players => _players;
 
         public void RemovePlayer(Guid id)
         {
@@ -44,7 +44,7 @@ namespace LibreCards.Core
             if (player is null)
                 return;
 
-            Players.Remove(player);
+            _players.Remove(player);
 
             if (PlayerCount < MaximumPlayerCount)
                 _gameStatus.SetWaiting();
@@ -63,7 +63,7 @@ namespace LibreCards.Core
 
         public Player GetPlayer(Guid id)
         {
-            var player = Players.FirstOrDefault(p => p.Id == id);
+            var player = _players.FirstOrDefault(p => p.Id == id);
 
             if (player is null)
                 throw new InvalidOperationException($"No player with id '{id}' found.");
