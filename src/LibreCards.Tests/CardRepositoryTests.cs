@@ -18,7 +18,7 @@ namespace LibreCards.Tests
         }
 
         [Fact]
-        public void CardRepository_GetOneCard()
+        public void CardRepository_DrawOneCard()
         {
             var cards = _cardRepository.DrawCards();
             Assert.Single(cards);
