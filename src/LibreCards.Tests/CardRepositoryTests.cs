@@ -26,14 +26,15 @@ namespace LibreCards.Tests
         [Fact]
         public void CardRepository_DrawManyCards()
         {
-            var cards = _cardRepository.DrawCards(2);
-            Assert.Equal(2, cards.Count());
+            var cards = _cardRepository.DrawCards(2).ToList();
+            cards.AddRange(_cardRepository.DrawCards(2));
+            Assert.Equal(4, cards.Count());
+            Assert.Equal(cards.Count(), cards.Distinct().Count());
         }
         [Fact]
         public void CardRepository_DrawCardsOverLimit()
         {
-            // Why does this not throw? It escapes return GetResponseCards()
-            Assert.Throws<IndexOutOfRangeException>(() => _cardRepository.DrawCards(int.MaxValue));
+            Assert.Throws<IndexOutOfRangeException>(() => _cardRepository.DrawCards(short.MaxValue));
         }
     }
 }

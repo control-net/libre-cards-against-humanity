@@ -48,6 +48,7 @@ namespace LibreCards.Core
 
             return GetResponseCards(jsonInterpretation, count);
         }
+
         private IEnumerable<Card> GetResponseCards(JsonFileStructure jsonFileStructure, int count = 1)
         {
             if ((_responseCardsIndex + count) > jsonFileStructure.Responses.Count())
