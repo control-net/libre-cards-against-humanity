@@ -11,7 +11,7 @@ namespace LibreCards.ConsoleApp
         static async Task Main(string[] args)
         {
             var myId = new Guid();
-            var serverUrl = args.Any() ? args[0] : "https://localhost:5001/cardsgame";
+            var serverUrl = args.Any() ? $"{args[0]}/cardsgame" : "https://localhost:5001/cardsgame";
 
             var hubConnection = new HubConnectionBuilder()
                 .WithUrl(serverUrl)

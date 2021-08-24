@@ -11,11 +11,9 @@ namespace LibreCards.WebApp.Hubs
     {
         private readonly IGame _game;
 
-        public GameHub()
+        public GameHub(IGame game)
         {
-            var gameStatus = new GameStatus();
-            var lobby = new Lobby(2, gameStatus);
-            _game = new Game(gameStatus, null, lobby);
+            _game = game;
         }
 
         public async Task Join()

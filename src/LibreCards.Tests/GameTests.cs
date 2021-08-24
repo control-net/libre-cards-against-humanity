@@ -107,34 +107,6 @@ namespace LibreCards.Tests
             Assert.NotEmpty(player.Cards);
         }
 
-        [Fact(Skip = "Exploration test")]
-        public void ExplorationTest()
-        {
-            ArrangeGameWithMinPlayers(4);
-
-            Assert.Throws<InvalidOperationException>(() => _game.StartGame());
-
-            var id = Guid.NewGuid();
-
-            _game.Lobby.AddPlayer(new Player(id));
-            _game.Lobby.AddPlayer(new Player(Guid.NewGuid()));
-            _game.Lobby.AddPlayer(new Player(Guid.NewGuid()));
-            _game.Lobby.AddPlayer(new Player(Guid.NewGuid()));
-
-            _game.StartGame();
-
-            Assert.Throws<InvalidOperationException>(() => _game.Lobby.AddPlayer(new Player(Guid.NewGuid())));
-
-            _game.Lobby.RemovePlayer(id);
-
-            Assert.Equal(3, _game.Lobby.PlayerCount);
-            Assert.False(_gameStatus.IsInProgress);
-
-            _game.Lobby.AddPlayer(new Player(Guid.NewGuid()));
-            _game.Lobby.AddPlayer(new Player(Guid.NewGuid()));
-            _game.StartGame();
-        }
-
         private void ArrangeGameWithMinPlayers(int minPlayers)
         {
             _lobby = new Lobby(minPlayers, _gameStatus);
