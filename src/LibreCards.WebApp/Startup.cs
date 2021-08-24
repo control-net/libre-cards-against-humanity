@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using LibreCards.WebApp.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
+using LibreCards.Core;
 
 namespace LibreCards.WebApp
 {
@@ -32,6 +33,13 @@ namespace LibreCards.WebApp
             {
                 opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
                     new[] { "application/octet-stream" });
+            });
+
+            services.AddSingleton<IGame, Game>(s =>
+            {
+                var gameStatus = new GameStatus();
+                var lobby = new Lobby(2, gameStatus);
+                return new Game(gameStatus, null, lobby);
             });
         }
 
