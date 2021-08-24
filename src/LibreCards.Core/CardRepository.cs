@@ -8,22 +8,13 @@ namespace LibreCards.Core
     public class CardRepository : ICardRepository
     {
         private IDataStorage _dataStorage;
-        private int _drawnCards = 0;
 
-        public CardRepository()
+        public CardRepository(IDataStorage dataStorage)
         {
-            _dataStorage = new DataStorage();
+            _dataStorage = dataStorage;
         }
 
         public IEnumerable<Card> DrawCards(int count = 1)
-        {
-            if ((_drawnCards + count) > _dataStorage.DefaultCards.Count())
-            {
-                throw new IndexOutOfRangeException("Out of Response Cards");
-            }
-            var cards = _dataStorage.DefaultCards.Skip(_drawnCards).Take(count);
-            _drawnCards += count;
-            return cards;
-        }
+            => Enumerable.Range(0, count).Select(_ => _dataStorage.DefaultCards.Random());
     }
 }

@@ -39,7 +39,9 @@ namespace LibreCards.WebApp
             {
                 var gameStatus = new GameStatus();
                 var lobby = new Lobby(2, gameStatus);
-                return new Game(gameStatus, null, lobby);
+                var dataStorage = new DataStorage();
+                var cardRepository = new CardRepository(dataStorage);
+                return new Game(gameStatus, cardRepository, lobby);
             });
         }
 

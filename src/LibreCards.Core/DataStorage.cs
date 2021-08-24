@@ -3,68 +3,48 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Reflection;
+using System.Linq;
 
 namespace LibreCards.Core
 {
-    class DataStorage : IDataStorage
+    public class DataStorage : IDataStorage
     {
-        public IEnumerable<Card> DefaultCards => GetDefaultCards();
-        private readonly string _filePath = Path.Combine(
-        Directory.GetParent(Environment.CurrentDirectory)
-        .Parent
-        .Parent
-        .Parent
-        .FullName,
-        @"LibreCards.Core\default-cards.json");
+        public IEnumerable<Card> DefaultCards { get; private set; }
 
-        private IEnumerable<Card> GetDefaultCards()
+        private readonly string _filePath = Path.Combine(Assembly.GetExecutingAssembly().Location, "default-cards.json");
+
+        public DataStorage()
+        {
+            DefaultCards = GetDefaultCardsFromFile();
+        }
+
+        private IEnumerable<Card> GetDefaultCardsFromFile()
         {
             var bytes = GetFileBytes(_filePath);
             var jsonFileStructure = DeserializeToObjectFromJson(bytes);
-            int cardIndex = 0;
-            Card[] cards = new Card[jsonFileStructure.Responses.Length + jsonFileStructure.Templates.Length];
-            foreach (var response in jsonFileStructure.Responses)
-            {
-                cards[cardIndex] = new Card { Id = cardIndex++, Text = response };
-            }
-            foreach (var template in jsonFileStructure.Templates)
-            {
-                cards[cardIndex] = new Card { Id = cardIndex++, Text = template };
-            }
-            return cards;
+
+            return jsonFileStructure.Cards.Select((text, id) => new Card { Id = id, Text = text });
         }
 
         private JsonFileStructure DeserializeToObjectFromJson(byte[] bytes)
         {
-            JsonFileStructure jsonInterpretation;
             try
             {
-                jsonInterpretation = JsonSerializer.Deserialize<JsonFileStructure>(bytes);
+                return JsonSerializer.Deserialize<JsonFileStructure>(bytes);
             }
             catch (JsonException)
             {
                 throw new JsonException("Json could not be deserialized");
             }
-            return jsonInterpretation;
         }
 
         private byte[] GetFileBytes(string path)
         {
             if (!File.Exists(path))
-            {
                 throw new FileNotFoundException();
-            }
-
-            byte[] rawFileContent;
-            try
-            {
-                rawFileContent = File.ReadAllBytes(path);
-            }
-            catch (Exception exception)
-            {
-                throw new Exception(exception.Message);
-            }
-            return rawFileContent;
+            
+            return File.ReadAllBytes(path);
         }
     }
 }
