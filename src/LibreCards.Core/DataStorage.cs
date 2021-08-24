@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace LibreCards.Core
 {
-    class DataStorage : IDataStorage
+    public class DataStorage : IDataStorage
     {
         public IEnumerable<Card> DefaultCards { get; private set; }
 
