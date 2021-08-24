@@ -6,7 +6,8 @@ namespace LibreCards.Core
     {
         [JsonPropertyName("templates")]
         public string[] Templates { get; set; }
-        [JsonPropertyName("responses")]
-        public string[] Responses { get; set; }
+
+        [JsonPropertyName("cards")]
+        public string[] Cards { get; set; }
     }
 }
