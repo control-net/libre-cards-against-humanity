@@ -44,7 +44,7 @@ namespace LibreCards.Core
             if(_judgeQueue.Count != 0)
                 _judgePlayer = _judgeQueue.Dequeue();
 
-            foreach(var player in _lobby.GetPlayers())
+            foreach(var player in _lobby.Players)
             {
                 var playerCards = player.Cards.ToList();
                 var cards = _cardRepository.DrawCards(8 - player.Cards.Count);
@@ -54,6 +54,6 @@ namespace LibreCards.Core
         }
 
         private void SetupJudgeQueue()
-            => _judgeQueue = new Queue<Guid>(_lobby.GetPlayers().Select(p => p.Id).Reverse());
+            => _judgeQueue = new Queue<Guid>(_lobby.Players.Select(p => p.Id).Reverse());
     }
 }
