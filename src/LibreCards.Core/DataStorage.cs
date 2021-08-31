@@ -12,7 +12,7 @@ namespace LibreCards.Core
     {
         public IEnumerable<Card> DefaultCards { get; private set; }
 
-        private readonly string _filePath = Path.Combine(Assembly.GetExecutingAssembly().Location, "default-cards.json");
+        private readonly string _filePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "default-cards.json");
 
         public DataStorage()
         {

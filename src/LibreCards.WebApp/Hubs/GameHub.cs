@@ -1,9 +1,6 @@
 ﻿using LibreCards.Core;
 using LibreCards.Core.Entities;
 using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LibreCards.WebApp.Hubs
 {
