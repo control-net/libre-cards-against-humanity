@@ -107,6 +107,19 @@ namespace LibreCards.Tests
             Assert.NotEmpty(player.Cards);
         }
 
+        [Fact]
+        public void NewGame_ShouldPresentTemplateCard()
+        {
+            const string ExpectedTemplate = "Test <BLANK> template!";
+            _cardRepo.ReturnedTemplate = new Template(ExpectedTemplate);
+
+            _game.Lobby.AddPlayer(new Player(Guid.NewGuid()));
+            _game.StartGame();
+
+            Assert.NotNull(_game.TemplateCard);
+            Assert.Equal(ExpectedTemplate, _game.TemplateCard.Content);
+        }
+
         private void ArrangeGameWithMinPlayers(int minPlayers)
         {
             _lobby = new Lobby(minPlayers, _gameStatus);

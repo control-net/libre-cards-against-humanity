@@ -16,6 +16,8 @@ namespace LibreCards.Core
 
         public ILobby Lobby => _lobby;
 
+        public Template TemplateCard { get; private set; }
+
         public Game(IGameStatus gameStatus, ICardRepository cardRepository, ILobby lobby)
         {
             _gameStatus = gameStatus;
@@ -51,6 +53,8 @@ namespace LibreCards.Core
                 playerCards.AddRange(cards);
                 player.Cards = playerCards;
             }
+
+            TemplateCard = _cardRepository.DrawTemplate();
         }
 
         private void SetupJudgeQueue()

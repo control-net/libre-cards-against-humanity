@@ -6,5 +6,6 @@ namespace LibreCards.Core
     public interface ICardRepository
     {
         IEnumerable<Card> DrawCards(int count = 1);
+        Template DrawTemplate();
     }
 }

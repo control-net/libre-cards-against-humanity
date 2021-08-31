@@ -6,5 +6,6 @@ namespace LibreCards.Core
     public interface IDataStorage
     {
         IEnumerable<Card> DefaultCards { get; }
+        IEnumerable<Template> DefaultTemplates { get; }
     }
 }

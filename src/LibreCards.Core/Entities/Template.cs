@@ -6,7 +6,7 @@ namespace LibreCards.Core.Entities
 {
     public class Template
     {
-        private const string BlankPlaceholder = "<BLANK>";
+        public const string BlankPlaceholder = "<BLANK>";
 
         public Template(string content)
         {

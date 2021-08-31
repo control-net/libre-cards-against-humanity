@@ -1,10 +1,9 @@
 ﻿using LibreCards.Core.Entities;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
+using System.Text.Json;
 
 namespace LibreCards.Core
 {
@@ -12,19 +11,22 @@ namespace LibreCards.Core
     {
         public IEnumerable<Card> DefaultCards { get; private set; }
 
+        public IEnumerable<Template> DefaultTemplates { get; private set; }
+
         private readonly string _filePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "default-cards.json");
 
         public DataStorage()
         {
-            DefaultCards = GetDefaultCardsFromFile();
+            LoadDefaultCardsFromFile();
         }
 
-        private IEnumerable<Card> GetDefaultCardsFromFile()
+        private void LoadDefaultCardsFromFile()
         {
             var bytes = GetFileBytes(_filePath);
             var jsonFileStructure = DeserializeToObjectFromJson(bytes);
 
-            return jsonFileStructure.Cards.Select((text, id) => new Card { Id = id, Text = text });
+            DefaultCards = jsonFileStructure.Cards.Select((text, id) => new Card { Id = id, Text = text });
+            DefaultTemplates = jsonFileStructure.Templates.Select(content => new Template(content));
         }
 
         private JsonFileStructure DeserializeToObjectFromJson(byte[] bytes)

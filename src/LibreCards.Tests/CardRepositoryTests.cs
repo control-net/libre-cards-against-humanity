@@ -37,6 +37,19 @@ namespace LibreCards.Tests
             Assert.Equal(4, cards.Count());
         }
 
+        [Fact]
+        public void CardRepository_DrawTemplate()
+        {
+            var expected = new Template(Template.BlankPlaceholder);
+            _dataStorageMock.Setup(ds => ds.DefaultTemplates).Returns(new[] { expected });
+
+            var actual = _cardRepository.DrawTemplate();
+
+            Assert.NotNull(actual);
+            Assert.Equal(expected.Content, actual.Content);
+            Assert.Equal(expected.BlankCount, actual.BlankCount);
+        }
+
         private void ArrangeStorage(IEnumerable<Card> cards)
             => _dataStorageMock.Setup(ds => ds.DefaultCards).Returns(cards);
 
