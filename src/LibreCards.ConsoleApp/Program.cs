@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using LibreCards.ConsoleApp.Models;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace LibreCards.ConsoleApp
 {
@@ -43,9 +40,11 @@ namespace LibreCards.ConsoleApp
                 Console.WriteLine($"Players: \t{string.Join("\n\t", ids)}");
             });
 
-            hubConnection.On("GameStarted", () =>
+            hubConnection.On<GameModel>("GameStarted", game =>
             {
                 Console.WriteLine(">>> Game Started <<<");
+                Console.WriteLine($"Judge ID: {game.JudgeId}");
+                Console.WriteLine(game.JudgeId == myId ? "You are the JUDGE" : "You are NOT the JUDGE");
             });
 
             hubConnection.On<string, int>("UpdateTemplate", (template, numOfSlots) =>

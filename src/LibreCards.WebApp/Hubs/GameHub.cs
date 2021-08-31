@@ -45,7 +45,7 @@ namespace LibreCards.WebApp.Hubs
             // NOTE(Peter): We should probably reduce the number of calls to everyone here.
             //              Technically the Client could request a template on their own when they
             //              receive a GameStarted event.
-            await Clients.All.SendAsync("GameStarted");
+            await Clients.All.SendAsync("GameStarted", new { JudgeId = _game.JudgePlayerId });
             await Clients.All.SendAsync("UpdateTemplate", _game.TemplateCard.Content, _game.TemplateCard.BlankCount);
         }
 

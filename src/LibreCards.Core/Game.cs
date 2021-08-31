@@ -7,7 +7,7 @@ namespace LibreCards.Core
 {
     public class Game : IGame
     {
-        private Guid _judgePlayer;
+        public Guid JudgePlayerId { get; private set; }
         private Queue<Guid> _judgeQueue;
         
         private readonly IGameStatus _gameStatus;
@@ -44,7 +44,7 @@ namespace LibreCards.Core
                 SetupJudgeQueue();
             
             if(_judgeQueue.Count != 0)
-                _judgePlayer = _judgeQueue.Dequeue();
+                JudgePlayerId = _judgeQueue.Dequeue();
 
             foreach(var player in _lobby.Players)
             {

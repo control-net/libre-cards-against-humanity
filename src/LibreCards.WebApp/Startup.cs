@@ -38,7 +38,7 @@ namespace LibreCards.WebApp
             services.AddSingleton<IGame, Game>(s =>
             {
                 var gameStatus = new GameStatus();
-                var lobby = new Lobby(2, gameStatus);
+                var lobby = new Lobby(3, gameStatus);
                 var dataStorage = new DataStorage();
                 var cardRepository = new CardRepository(dataStorage);
                 return new Game(gameStatus, cardRepository, lobby);
