@@ -1,17 +1,33 @@
 {
-    "templates": [
-        "In the next tutorial, Peter is going to show how to make <BLANK> using <BLANK>",
-        "Most people watch YouTube because of <BLANK>"
-    ],
-    "cards": [
-        "Another Discord bot",
-        "Draxis' GitHub",
-        "nothing",
-        "a Twitch stream",
-        "a Mod for Amnesia",
-        "at least 3 years",
-        "Windows 11",
-        "GNU/Linux",
-        "a lot of drugs"
-    ]
+  "templates": [
+    "In the next tutorial, Peter is going to show how to make <BLANK> using <BLANK>",
+    "Most people watch YouTube because of <BLANK>",
+    "The next Visual Studio update is huge, Microsoft introduces <BLANK> in the IDE itself",
+    "Every junior developer has two things in common. <BLANK> and <BLANK>"
+  ],
+  "cards": [
+    "Another Discord bot",
+    "Draxis' GitHub",
+    "nothing",
+    "a Twitch stream",
+    "a Mod for Amnesia",
+    "at least 3 years",
+    "Windows 11",
+    "GNU/Linux",
+    "a lot of drugs",
+    "tones of cash",
+    "C#",
+    "every single JavaScript programmer",
+    "YouTube videos",
+    "Free and Open Source Software",
+    "broken hearts",
+    "Dependency Injection",
+    "SOLID principles",
+    "pain",
+    "blood sweat and tears",
+    "games on Steam",
+    "VPN",
+    "Intelli-waifu",
+    "anime girls"
+  ]
 }
