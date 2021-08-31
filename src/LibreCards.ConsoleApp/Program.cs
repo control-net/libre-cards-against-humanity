@@ -33,9 +33,19 @@ namespace LibreCards.ConsoleApp
                 Console.WriteLine($"Player Left: {id}");
             });
 
+            hubConnection.On<IEnumerable<string>>("UpdateCards", cards =>
+            {
+                Console.WriteLine($"YOUR CARDS ARE: {string.Join(", ", cards)}");
+            });
+
             hubConnection.On<IEnumerable<Guid>>("PlayerList", ids =>
             {
                 Console.WriteLine($"Players: \t{string.Join("\n\t", ids)}");
+            });
+
+            hubConnection.On("GameStarted", () =>
+            {
+                Console.WriteLine(">>> Game Started <<<");
             });
 
             await hubConnection.StartAsync();
@@ -55,6 +65,14 @@ namespace LibreCards.ConsoleApp
                 {
                     await hubConnection.SendAsync("Join");
                     await hubConnection.SendAsync("GetPlayers");
+                }
+                else if (msg.ToLower() == "cards")
+                {
+                    await hubConnection.SendAsync("GetMyCards", myId);
+                }
+                else if (msg.ToLower() == "start")
+                {
+                    await hubConnection.SendAsync("StartGame");
                 }
 
                 Console.WriteLine(string.Empty);
