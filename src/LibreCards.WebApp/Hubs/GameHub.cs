@@ -42,7 +42,11 @@ namespace LibreCards.WebApp.Hubs
             // FIXME(Peter): This will throw if the game cannot start for some reason.
             _game.StartGame();
 
+            // NOTE(Peter): We should probably reduce the number of calls to everyone here.
+            //              Technically the Client could request a template on their own when they
+            //              receive a GameStarted event.
             await Clients.All.SendAsync("GameStarted");
+            await Clients.All.SendAsync("UpdateTemplate", _game.TemplateCard.Content, _game.TemplateCard.BlankCount);
         }
 
         public async Task GetMyCards(Guid id)
@@ -53,6 +57,13 @@ namespace LibreCards.WebApp.Hubs
                 return;
 
             await Clients.Caller.SendAsync("UpdateCards", player.Cards.Select(c => c.Text));
+        }
+
+        public async Task RequestTemplate()
+        {
+            // FIXME(Peter): The game might not be in progress...
+
+            await Clients.Caller.SendAsync("UpdateTemplate", _game.TemplateCard.Content, _game.TemplateCard.BlankCount);
         }
     }
 }

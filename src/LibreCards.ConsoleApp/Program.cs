@@ -48,6 +48,11 @@ namespace LibreCards.ConsoleApp
                 Console.WriteLine(">>> Game Started <<<");
             });
 
+            hubConnection.On<string, int>("UpdateTemplate", (template, numOfSlots) =>
+            {
+                Console.WriteLine($"The current template:\n{template}\n- The template has {numOfSlots} slot(s).");
+            });
+
             await hubConnection.StartAsync();
 
             while (true)
@@ -73,6 +78,10 @@ namespace LibreCards.ConsoleApp
                 else if (msg.ToLower() == "start")
                 {
                     await hubConnection.SendAsync("StartGame");
+                }
+                else if (msg.ToLower() == "template")
+                {
+                    await hubConnection.SendAsync("RequestTemplate");
                 }
 
                 Console.WriteLine(string.Empty);
