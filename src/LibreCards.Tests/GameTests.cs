@@ -8,7 +8,7 @@ namespace LibreCards.Tests
     public class GameTests
     {
         private IGame _game;
-        private ICardRepository _cardRepo;
+        private MockCardRepository _cardRepo;
         private IGameStatus _gameStatus;
         private ILobby _lobby;
 
