@@ -1,4 +1,6 @@
-﻿namespace LibreCards.ConsoleApp.Models
+﻿using System;
+
+namespace LibreCards.Core.Entities.Client
 {
     public class GameModel
     {
