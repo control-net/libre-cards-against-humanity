@@ -1,0 +1,48 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@implements IAsyncDisposable
+
+<h1>Welcome to Libre Cards Against Humanity!</h1>
+
+<p>
+    Status: @_statusMessage
+</p>
+
+<button @onclick="async () => await JoinGameAsync()">Join</button>
+
+@code
+{
+    private HubConnection? _hubConnection;
+
+    private string _statusMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:5001/signalr/cardsgame")
+            .Build();
+
+        _hubConnection.On<Guid>("PlayerJoined", id =>
+        {
+            _statusMessage = $"Player joined with ID {id}";
+            StateHasChanged();
+        });
+
+        await _hubConnection.StartAsync();
+        _statusMessage = "Hub Connection established";
+        StateHasChanged();
+    }
+
+    private async ValueTask JoinGameAsync()
+    {
+        await _hubConnection.SendAsync("Join");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
+    }
+}

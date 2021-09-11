@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.SignalR;
 using LibreCards.WebApp.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
 using LibreCards.Core;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace LibreCards.WebApp
 {
@@ -65,12 +66,22 @@ namespace LibreCards.WebApp
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
+            app.Map("/signalr", map =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapHub<GameHub>("/cardsgame");
+#if DEBUG
+                map.UseCors(builder => builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .SetIsOriginAllowed(origin => true)
+                    .SetIsOriginAllowedToAllowWildcardSubdomains()
+                    .Build());
+#endif
+                map.UseRouting();
+                map.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapHub<GameHub>("/cardsgame");
+                });
             });
         }
     }

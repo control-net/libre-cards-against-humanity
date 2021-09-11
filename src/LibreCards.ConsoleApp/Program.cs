@@ -14,7 +14,7 @@ namespace LibreCards.ConsoleApp
                 Rerender = RenderGameState
             };
 
-            var serverUrl = args.Any() ? $"{args[0]}/cardsgame" : "https://localhost:5001/cardsgame";
+            var serverUrl = args.Any() ? $"{args[0]}/cardsgame" : "https://localhost:5001/signalr/cardsgame";
 
             var hubConnection = new HubConnectionBuilder()
                 .WithUrl(serverUrl)
