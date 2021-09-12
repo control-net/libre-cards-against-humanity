@@ -23,7 +23,7 @@ namespace LibreCards.Core
 
         public int PlayerCount => _players.Count;
 
-        private ICollection<Player> _players = new List<Player>();
+        private readonly ICollection<Player> _players = new List<Player>();
 
         public bool HasEnoughPlayers => PlayerCount >= MinimumPlayerCount;
 

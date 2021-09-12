@@ -6,7 +6,7 @@ namespace LibreCards.Core
 {
     public class CardRepository : ICardRepository
     {
-        private IDataStorage _dataStorage;
+        private readonly IDataStorage _dataStorage;
 
         public CardRepository(IDataStorage dataStorage)
         {

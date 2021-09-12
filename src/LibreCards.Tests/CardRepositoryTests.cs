@@ -34,7 +34,7 @@ namespace LibreCards.Tests
             var cards = _cardRepository.DrawCards(2).ToList();
             cards.AddRange(_cardRepository.DrawCards(2));
 
-            Assert.Equal(4, cards.Count());
+            Assert.Equal(4, cards.Count);
         }
 
         [Fact]
