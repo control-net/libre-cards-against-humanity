@@ -1,8 +1,9 @@
 # Libre Cards Against Humanity
 
-<a href="https://github.com/petrspelos/libre-cards-against-humanity/actions">
-  <img alt="GitHub Workflow Status (branch)" src="https://img.shields.io/github/workflow/status/petrspelos/libre-cards-against-humanity/.NET/main?style=for-the-badge">
-</a>
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=petrspelos_libre-cards-against-humanity&metric=alert_status)](https://sonarcloud.io/dashboard?id=petrspelos_libre-cards-against-humanity)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=petrspelos_libre-cards-against-humanity&metric=coverage)](https://sonarcloud.io/dashboard?id=petrspelos_libre-cards-against-humanity)
+
+---
 
 <a href="https://github.com/petrspelos/libre-cards-against-humanity/graphs/contributors">
   <img src="https://img.shields.io/github/contributors/petrspelos/libre-cards-against-humanity.svg?style=for-the-badge" alt="contributors">
@@ -13,6 +14,8 @@
 <a href="https://github.com/petrspelos/libre-cards-against-humanity/blob/master/LICENSE">
   <img src="https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge" alt="license">
 </a>
+
+---
 
 Free and Open Source implementation of Cards against humanity using Signal R.
 
