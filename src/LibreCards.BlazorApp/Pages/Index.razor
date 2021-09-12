@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using Microsoft.AspNetCore.SignalR.Client
 @implements IAsyncDisposable
 
 <h1>Welcome to Libre Cards Against Humanity!</h1>
@@ -14,7 +13,7 @@
 {
     private HubConnection? _hubConnection;
 
-    private string _statusMessage = string.Empty;
+    private string _statusMessage = "Connecting to a server...";
 
     protected override async Task OnInitializedAsync()
     {
