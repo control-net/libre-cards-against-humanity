@@ -2,6 +2,32 @@
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.card {
+    border: 1px solid #00000014;
+    margin: 40px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    border-radius: 5px;
+    aspect-ratio: 8 / 11.5;
+    width: 200px;
+    padding: 10px;
+}
+
+.card-template {
+    color: white;
+    background-color: black;
+}
+
+.card-drawer {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card-hand {
+    margin: 10px;
+    text-align: center;
+    padding-top: 30px;
+}
+
 a, .btn-link {
     color: #0077cc;
 }

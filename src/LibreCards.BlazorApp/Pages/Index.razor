@@ -11,7 +11,7 @@ else
 
     <p><b>Players</b></p>
 
-    @if(_gameState.LocalPlayerState == PlayerState.InLobby)
+    @if(_gameState.LocalPlayerState != PlayerState.NotInLobby)
     {
         <p>Your ID: @_gameState.LocalPlayerId</p>
     }
@@ -34,11 +34,32 @@ else
     {
         <button @onclick="async () => await JoinGameAsync()">Join Lobby</button>
     }
+
+    @if(_gameState.LocalPlayerState == PlayerState.InLobby)
+    {
+        <button @onclick="async () => await StartGameAsync()">Start Game</button>
+    }
 }
 
 <p>
     Status: @_statusMessage
 </p>
+
+@if(_gameState.LocalPlayerState == PlayerState.Playing)
+{
+    <div class="card card-template">
+        <span>@_gameState.TemplateCard</span>
+    </div>
+
+    <div class="card-drawer">
+        @foreach(var card in _gameState.Cards ?? new string[0])
+        {
+            <div class="card card-hand">
+                <span>@card</span>
+            </div>
+        }
+    </div>
+}
 
 @code
 {
@@ -68,6 +89,11 @@ else
     private async ValueTask JoinGameAsync()
     {
         await _hubConnection.SendAsync("Join");
+    }
+
+    private async ValueTask StartGameAsync()
+    {
+        await _hubConnection.SendAsync("StartGame");
     }
 
     public async ValueTask DisposeAsync()
