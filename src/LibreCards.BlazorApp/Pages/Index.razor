@@ -1,20 +1,73 @@
 ﻿@page "/"
-@using Microsoft.AspNetCore.SignalR.Client
 @implements IAsyncDisposable
 
-<h1>Welcome to Libre Cards Against Humanity!</h1>
+@if(_gameState is null)
+{
+    <p>Connecting to a server...</p>
+}
+else
+{
+    <h1>Welcome to Libre Cards Against Humanity!</h1>
+
+    <p><b>Players</b></p>
+
+    @if(_gameState.LocalPlayerState != PlayerState.NotInLobby)
+    {
+        <p>Your ID: @_gameState.LocalPlayerId</p>
+    }
+
+    <table>
+        <tr>
+            <th>Username</th>
+            <th>ID</th>
+        </tr>
+        @foreach(var playerId in _gameState.Players)
+        {
+        <tr>
+            <td>Player</td>
+            <td>@playerId</td>
+        </tr>
+        }
+    </table>
+
+    @if(_gameState.LocalPlayerState == PlayerState.NotInLobby)
+    {
+        <button @onclick="async () => await JoinGameAsync()">Join Lobby</button>
+    }
+
+    @if(_gameState.LocalPlayerState == PlayerState.InLobby)
+    {
+        <button @onclick="async () => await StartGameAsync()">Start Game</button>
+    }
+}
 
 <p>
     Status: @_statusMessage
 </p>
 
-<button @onclick="async () => await JoinGameAsync()">Join</button>
+@if(_gameState.LocalPlayerState == PlayerState.Playing)
+{
+    <div class="card card-template">
+        <span>@_gameState.TemplateCard</span>
+    </div>
+
+    <div class="card-drawer">
+        @foreach(var card in _gameState.Cards ?? new string[0])
+        {
+            <div class="card card-hand">
+                <span>@card</span>
+            </div>
+        }
+    </div>
+}
 
 @code
 {
     private HubConnection? _hubConnection;
 
-    private string _statusMessage = string.Empty;
+    private LocalGameState? _gameState;
+
+    private string _statusMessage = "Connecting to a server...";
 
     protected override async Task OnInitializedAsync()
     {
@@ -22,13 +75,13 @@
             .WithUrl("https://localhost:5001/signalr/cardsgame")
             .Build();
 
-        _hubConnection.On<Guid>("PlayerJoined", id =>
-        {
-            _statusMessage = $"Player joined with ID {id}";
-            StateHasChanged();
-        });
+        _gameState = new LocalGameState(_hubConnection);
+        _gameState.GameStateChanged += (s, args) => StateHasChanged();
 
         await _hubConnection.StartAsync();
+
+        await _gameState.InitializeAsync();
+
         _statusMessage = "Hub Connection established";
         StateHasChanged();
     }
@@ -36,6 +89,11 @@
     private async ValueTask JoinGameAsync()
     {
         await _hubConnection.SendAsync("Join");
+    }
+
+    private async ValueTask StartGameAsync()
+    {
+        await _hubConnection.SendAsync("StartGame");
     }
 
     public async ValueTask DisposeAsync()
