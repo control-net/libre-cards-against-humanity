@@ -1,4 +1,4 @@
-name: Build
+name: Build and Analyze
 on:
   push:
     branches:
@@ -17,11 +17,15 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Setup .NET
+      - name: Setup .NET 6
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.0'
           include-prerelease: True
+      - name: Setup .NET 5
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0'
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
         with:
