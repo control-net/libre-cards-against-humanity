@@ -31,6 +31,8 @@ namespace LibreCards.WebApp
                 var cardRepository = new CardRepository(dataStorage);
                 return new Game(gameStatus, cardRepository, lobby);
             });
+
+            services.AddSingleton<IPlayerConnectionStorage, InMemoryPlayerConnectionStorage>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

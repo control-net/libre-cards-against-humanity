@@ -8,6 +8,8 @@ namespace LibreCards.Core.Entities
     {
         public Guid Id { get; set; }
 
+        public string Username {  get; set; }
+
         public ICollection<Card> Cards { get; set; }
 
         public Player(Guid id)

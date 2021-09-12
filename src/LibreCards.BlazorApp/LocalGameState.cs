@@ -11,13 +11,13 @@ public class LocalGameState
 
     public Guid LocalPlayerId { get; private set; }
 
-    public IEnumerable<Guid> Players => _players;
+    public IEnumerable<PlayerModel> Players => _players;
 
     public IEnumerable<string> Cards { get; private set; }
 
     public string TemplateCard { get; private set; }
 
-    private List<Guid> _players = new();
+    private List<PlayerModel> _players = new();
 
     private readonly HubConnection _connection;
 
@@ -28,9 +28,9 @@ public class LocalGameState
 
         _connection = connection;
 
-        connection.On<Guid>("PlayerJoined", OnPlayerJoined);
+        connection.On<PlayerModel>("PlayerJoined", OnPlayerJoined);
         connection.On<Guid>("IdAssigned", OnIdAssigned);
-        connection.On<List<Guid>>("PlayerList", OnPlayerListReceived);
+        connection.On<List<PlayerModel>>("PlayerList", OnPlayerListReceived);
         connection.On<GameModel>("GameStarted", OnGameStarted);
         connection.On<string, int>("UpdateTemplate", OnUpdateTemplate);
         connection.On<IEnumerable<string>>("UpdateCards", OnUpdateCards);
@@ -47,8 +47,6 @@ public class LocalGameState
         // TODO: assign judge
         LocalPlayerState = PlayerState.Playing;
         GameStateChanged?.Invoke(this, EventArgs.Empty);
-
-        _ = _connection.SendAsync("GetMyCards", LocalPlayerId);
     }
 
     public void OnUpdateTemplate(string template, int numOfSlots)
@@ -57,7 +55,7 @@ public class LocalGameState
         GameStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    private void OnPlayerListReceived(List<Guid> ids)
+    private void OnPlayerListReceived(List<PlayerModel> ids)
     {
         _players = ids;
         GameStateChanged?.Invoke(this, EventArgs.Empty);
@@ -75,9 +73,9 @@ public class LocalGameState
         GameStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    private void OnPlayerJoined(Guid id)
+    private void OnPlayerJoined(PlayerModel player)
     {
-        _players.Add(id);
+        _players.Add(player);
         GameStateChanged?.Invoke(this, EventArgs.Empty);
     }
 }

@@ -21,17 +21,18 @@ else
             <th>Username</th>
             <th>ID</th>
         </tr>
-        @foreach(var playerId in _gameState.Players)
+        @foreach(var player in _gameState.Players)
         {
         <tr>
-            <td>Player</td>
-            <td>@playerId</td>
+            <td>@player.Username</td>
+            <td>@player.Id</td>
         </tr>
         }
     </table>
 
     @if(_gameState.LocalPlayerState == PlayerState.NotInLobby)
     {
+        <input type="text" @bind-value="_usernameInput" />
         <button @onclick="async () => await JoinGameAsync()">Join Lobby</button>
     }
 
@@ -63,6 +64,8 @@ else
 
 @code
 {
+    private string _usernameInput;
+
     private HubConnection? _hubConnection;
 
     private LocalGameState? _gameState;
@@ -88,7 +91,7 @@ else
 
     private async ValueTask JoinGameAsync()
     {
-        await _hubConnection.SendAsync("Join");
+        await _hubConnection.SendAsync("Join", _usernameInput);
     }
 
     private async ValueTask StartGameAsync()
