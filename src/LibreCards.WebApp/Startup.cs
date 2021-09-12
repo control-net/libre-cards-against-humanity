@@ -59,12 +59,8 @@ namespace LibreCards.WebApp
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
 
             app.Map("/signalr", map =>
             {
@@ -78,6 +74,7 @@ namespace LibreCards.WebApp
                     .Build());
 #endif
                 map.UseRouting();
+                map.UseAuthorization();
                 map.UseEndpoints(endpoints =>
                 {
                     endpoints.MapHub<GameHub>("/cardsgame");
