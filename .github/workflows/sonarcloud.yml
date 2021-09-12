@@ -52,7 +52,9 @@ jobs:
         shell: powershell
         working-directory: ./src
         run: |
-          ..\.sonar\scanner\dotnet-sonarscanner begin /k:"petrspelos_libre-cards-against-humanity" /o:"petrspelos" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build --configuration Release
+          dotnet tool install --global coverlet.console
+          ..\.sonar\scanner\dotnet-sonarscanner begin /k:"petrspelos_libre-cards-against-humanity" /o:"petrspelos" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="./coverage.opencover.xml"
+          dotnet build
+          coverlet .\LibreCards.Tests\bin\Debug\net6.0\LibreCards.Tests.dll -f opencover --target "dotnet" --targetargs "test .\LibreCards.Tests\LibreCards.Tests.csproj --no-build"
           ..\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
