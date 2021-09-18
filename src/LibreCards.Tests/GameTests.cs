@@ -1,5 +1,6 @@
 using LibreCards.Core;
 using LibreCards.Core.Entities;
+using Moq;
 using System;
 using Xunit;
 
@@ -7,17 +8,17 @@ namespace LibreCards.Tests
 {
     public class GameTests
     {
-        private IGame _game;
-        private MockCardRepository _cardRepo;
-        private IGameStatus _gameStatus;
+        private readonly Mock<ICardRepository> _cardRepoMock;
+        private readonly IGameStatus _gameStatus;
         private ILobby _lobby;
+        private IGame _game;
 
         public GameTests()
         {
-            _cardRepo = new MockCardRepository();
+            _cardRepoMock = new Mock<ICardRepository>();
             _gameStatus = new GameStatus();
             _lobby = new Lobby(0, _gameStatus);
-            _game = new Game(_gameStatus, _cardRepo, _lobby);
+            _game = new Game(_gameStatus, _cardRepoMock.Object, _lobby);
         }
 
         [Fact]
@@ -99,6 +100,7 @@ namespace LibreCards.Tests
         public void NewGame_PlayerShouldGetCards()
         {
             var playerId = Guid.NewGuid();
+            _cardRepoMock.Setup(r => r.DrawCards(8)).Returns(new Card[8]);
             _game.Lobby.AddPlayer(new Player(playerId));
             _game.StartGame();
 
@@ -111,7 +113,7 @@ namespace LibreCards.Tests
         public void NewGame_ShouldPresentTemplateCard()
         {
             const string ExpectedTemplate = "Test <BLANK> template!";
-            _cardRepo.ReturnedTemplate = new Template(ExpectedTemplate);
+            _cardRepoMock.Setup(r => r.DrawTemplate()).Returns(new Template(ExpectedTemplate));
 
             _game.Lobby.AddPlayer(new Player(Guid.NewGuid()));
             _game.StartGame();
@@ -123,7 +125,7 @@ namespace LibreCards.Tests
         private void ArrangeGameWithMinPlayers(int minPlayers)
         {
             _lobby = new Lobby(minPlayers, _gameStatus);
-            _game = new Game(_gameStatus, _cardRepo, _lobby);
+            _game = new Game(_gameStatus, _cardRepoMock.Object, _lobby);
         }
     }
 }
