@@ -13,7 +13,7 @@ public class LocalGameState
 
     public IEnumerable<PlayerModel> Players => _players;
 
-    public IEnumerable<string> Cards { get; private set; }
+    public IEnumerable<CardModel> Cards { get; private set; }
 
     public string TemplateCard { get; private set; }
 
@@ -33,10 +33,10 @@ public class LocalGameState
         connection.On<List<PlayerModel>>("PlayerList", OnPlayerListReceived);
         connection.On<GameModel>("GameStarted", OnGameStarted);
         connection.On<string, int>("UpdateTemplate", OnUpdateTemplate);
-        connection.On<IEnumerable<string>>("UpdateCards", OnUpdateCards);
+        connection.On<IEnumerable<CardModel>>("UpdateCards", OnUpdateCards);
     }
 
-    private void OnUpdateCards(IEnumerable<string> cards)
+    private void OnUpdateCards(IEnumerable<CardModel> cards)
     {
         Cards = cards;
         GameStateChanged?.Invoke(this, EventArgs.Empty);

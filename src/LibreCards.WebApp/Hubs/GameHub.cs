@@ -100,7 +100,7 @@ namespace LibreCards.WebApp.Hubs
             if (player is null)
                 return;
 
-            await Clients.Caller.SendAsync("UpdateCards", player.Cards.Select(c => c.Text));
+            await Clients.Caller.SendAsync("UpdateCards", player.Cards.Select(c => new CardModel(c.Id, c.Text)));
         }
 
         public async Task RequestTemplate()

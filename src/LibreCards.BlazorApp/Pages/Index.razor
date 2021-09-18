@@ -56,7 +56,7 @@ else
         @foreach(var card in _gameState.Cards ?? new string[0])
         {
             <div class="card card-hand">
-                <span>@card</span>
+                <span>@card.Text</span>
             </div>
         }
     </div>
