@@ -16,7 +16,7 @@ public class GameStatusTests
     [Fact]
     public void GameStatus_ShouldStartAsWaiting()
     {
-        Assert.Equal(GameState.Waiting, _status.Current);
+        Assert.Equal(GameState.Waiting, _status.CurrentState);
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public class GameStatusTests
     {
         _status.SwitchToPlaying();
 
-        Assert.Equal(GameState.Playing, _status.Current);
+        Assert.Equal(GameState.Playing, _status.CurrentState);
     }
 
     [Fact]
@@ -32,7 +32,7 @@ public class GameStatusTests
     {
         _status.SwitchToJudging();
 
-        Assert.Equal(GameState.Judging, _status.Current);
+        Assert.Equal(GameState.Judging, _status.CurrentState);
     }
 
     [Fact]
@@ -41,6 +41,6 @@ public class GameStatusTests
         _status.SwitchToJudging();
         _status.SwitchToWaiting();
 
-        Assert.Equal(GameState.Waiting, _status.Current);
+        Assert.Equal(GameState.Waiting, _status.CurrentState);
     }
 }

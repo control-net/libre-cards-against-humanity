@@ -4,7 +4,7 @@ namespace LibreCards.Core
 {
     public interface IGameStatus
     {
-        GameState Current { get; }
+        GameState CurrentState { get; }
         void SwitchToPlaying();
         void SwitchToWaiting();
         void SwitchToJudging();

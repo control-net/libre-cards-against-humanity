@@ -1,6 +1,5 @@
 using LibreCards.Core;
 using LibreCards.Core.Entities;
-using LibreCards.Core.Persistence;
 using Moq;
 using Xunit;
 
@@ -8,24 +7,21 @@ namespace LibreCards.Tests.Gameplay;
 
 public class GameTests
 {
-    private readonly Mock<ICardRepository> _cardRepoMock;
+    private readonly Mock<ICardState> _cardStateMock;
     private readonly Mock<IGameStatus> _gameStatusMock;
     private readonly Mock<ILobby> _lobbyMock;
     private readonly Mock<IJudgePicker> _judgePickerMock;
 
     private readonly IGame _game;
 
-    private const int TestCardsCount = 8;
-    private const string TestTemplate = "<BLANK>";
-
     public GameTests()
     {
-        _cardRepoMock = new Mock<ICardRepository>();
+        _cardStateMock = new Mock<ICardState>();
         _gameStatusMock = new Mock<IGameStatus>();
         _lobbyMock = new Mock<ILobby>();
         _judgePickerMock = new Mock<IJudgePicker>();
 
-        _game = new Game(_gameStatusMock.Object, _cardRepoMock.Object, _lobbyMock.Object, _judgePickerMock.Object);
+        _game = new Game(_gameStatusMock.Object, _cardStateMock.Object, _lobbyMock.Object, _judgePickerMock.Object);
     }
 
     [Fact]
@@ -43,21 +39,19 @@ public class GameTests
     public void StartGame_InProgress_ShouldThrow(GameState state)
     {
         ArrangeReadyToStartGame();
-        _gameStatusMock.Setup(s => s.Current).Returns(state);
+        _gameStatusMock.Setup(s => s.CurrentState).Returns(state);
 
         Assert.Throws<InvalidOperationException>(() => _game.StartGame());
     }
 
     [Fact]
-    public void StartGame_PlayerShouldGetCards()
+    public void StartGame_PlayersShouldGetCards()
     {
         ArrangeReadyToStartGame();
-        var player = new Player(Guid.NewGuid());
-        _lobbyMock.Setup(l => l.Players).Returns(new[] { player });
         
         _game.StartGame();
 
-        Assert.Equal(TestCardsCount, player.Cards.Count);
+        _cardStateMock.Verify(s => s.RefillPlayerCards(It.IsAny<IReadOnlyCollection<Player>>()), Times.Once());
     }
 
     [Fact]
@@ -67,15 +61,35 @@ public class GameTests
 
         _game.StartGame();
 
-        Assert.Equal(TestTemplate, _game.TemplateCard.Content);
+        _cardStateMock.Verify(s => s.DrawTemplateCard(), Times.Once());
+    }
+
+    [Fact]
+    public void StartGame_ShouldSetStatusToPlaying()
+    {
+        ArrangeReadyToStartGame();
+
+        _game.StartGame();
+
+        _gameStatusMock.Verify(s => s.CurrentState, Times.AtLeastOnce());
+        _gameStatusMock.Verify(s => s.SwitchToPlaying(), Times.Once());
+        _gameStatusMock.VerifyNoOtherCalls();
+    }
+
+    [Fact]
+    public void StartGame_ShouldPickNewJudge()
+    {
+        ArrangeReadyToStartGame();
+
+        _game.StartGame();
+
+        _judgePickerMock.Verify(j => j.PickNewJudge(It.IsAny<IReadOnlyCollection<Player>>()), Times.Once());
     }
 
     private void ArrangeReadyToStartGame()
     {
-        _gameStatusMock.Setup(s => s.Current).Returns(GameState.Waiting);
+        _gameStatusMock.Setup(s => s.CurrentState).Returns(GameState.Waiting);
         _lobbyMock.Setup(l => l.HasEnoughPlayers).Returns(true);
         _lobbyMock.Setup(l => l.Players).Returns(new[] { new Player(Guid.NewGuid()), new Player(Guid.NewGuid()), new Player(Guid.NewGuid()) });
-        _cardRepoMock.Setup(r => r.DrawTemplate()).Returns(new Template(TestTemplate));
-        _cardRepoMock.Setup(r => r.DrawCards(8)).Returns(new Card[TestCardsCount]);
     }
 }

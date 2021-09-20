@@ -62,7 +62,7 @@ namespace LibreCards.Core
 
         public void AddPlayer(Player player)
         {
-            if (_gameStatus.Current != GameState.Waiting)
+            if (_gameStatus.CurrentState != GameState.Waiting)
                 throw new InvalidOperationException("Cannot add a player while the game is running.");
 
             if (_players.Count == MaximumPlayerCount)

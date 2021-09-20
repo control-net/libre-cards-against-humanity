@@ -27,6 +27,16 @@ public class CardRepositoryTests
     }
 
     [Fact]
+    public void CardRepository_DrawZero_ShouldReturnEmptyCollection()
+    {
+        ArrangeStorage(new[] { new Card { Id = 1, Text = "CardText" } });
+
+        var cards = _cardRepository.DrawCards(0);
+
+        Assert.Empty(cards);
+    }
+
+    [Fact]
     public void CardRepository_DrawManyCards_ShouldReturnCorrectNumberOfCards()
     {
         ArrangeStorageWithNumberOfCards(4);

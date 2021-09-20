@@ -104,7 +104,7 @@ public class LobbyTests
     [InlineData(GameState.Judging)]
     public void AddPlayer_WhileGameIsInProgress_ShouldThrow(GameState state)
     {
-        _gameStatusMock.Setup(s => s.Current).Returns(state);
+        _gameStatusMock.Setup(s => s.CurrentState).Returns(state);
 
         Assert.Throws<InvalidOperationException>(() => _lobby.AddPlayer(new Player(Guid.NewGuid())));
     }
