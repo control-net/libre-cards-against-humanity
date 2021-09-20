@@ -77,6 +77,31 @@ public class LobbyTests
     }
 
     [Fact]
+    public void MaximumPlayerCount_ShouldSetCount()
+    {
+        const int expected = 20;
+
+        _lobby.SetMaximumPlayerCount(expected);
+
+        Assert.Equal(expected, _lobby.MaximumPlayerCount);
+    }
+
+    [Fact]
+    public void HasEnoughPlayers_ShouldBeFalseByDefault()
+    {
+        Assert.False(_lobby.HasEnoughPlayers);
+    }
+
+    [Fact]
+    public void HasEnoughPlayer_ShouldReturnCorrectResult()
+    {
+        for (var i = 0; i < _lobby.MinimumPlayerCount; i++)
+            _lobby.AddPlayer(new Player(Guid.NewGuid()));
+
+        Assert.True(_lobby.HasEnoughPlayers);
+    }
+
+    [Fact]
     public void Players_ShouldStartEmpty()
     {
         Assert.Equal(0, _lobby.Players.Count);

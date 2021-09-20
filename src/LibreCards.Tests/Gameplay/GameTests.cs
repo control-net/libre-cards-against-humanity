@@ -25,6 +25,33 @@ public class GameTests
     }
 
     [Fact]
+    public void JudgePlayerId_ShouldReturnFromJudgePicker()
+    {
+        var expected = Guid.NewGuid();
+        _judgePickerMock.Setup(j => j.CurrentJudgeId).Returns(expected);
+
+        Assert.Equal(expected, _game.JudgePlayerId);
+    }
+
+    [Fact]
+    public void TemplateCard_ShouldReturnFromCardState()
+    {
+        var expected = "<BLANK>";
+        _cardStateMock.Setup(c => c.CurrentTemplateCard).Returns(new Template(expected));
+
+        Assert.Equal(expected, _game.TemplateCard.Content);
+    }
+
+    [Fact]
+    public void GameState_ShouldReturnFromGameStatus()
+    {
+        var expected = GameState.Judging;
+        _gameStatusMock.Setup(s => s.CurrentState).Returns(expected);
+
+        Assert.Equal(expected, _game.GameState);
+    }
+
+    [Fact]
     public void StartGame_NotEnoughPlayers_ShouldThrow()
     {
         ArrangeReadyToStartGame();
