@@ -88,14 +88,14 @@ namespace LibreCards.WebApp.Hubs
 
             foreach(var user in _connections.Connections)
             {
-                var gameUser = _game.Lobby.GetPlayer(user.Value.Id);
+                var gameUser = _game.Lobby.Players.FirstOrDefault(p => p.Id == user.Value.Id);
                 await Clients.Client(user.Key).SendAsync("UpdateCards", gameUser.Cards.Select(c => c.Text));
             }
         }
 
         public async Task GetMyCards(Guid id)
         {
-            var player = _game.Lobby.GetPlayer(id);
+            var player = _game.Lobby.Players.FirstOrDefault(p => p.Id == id);
 
             if (player is null)
                 return;

@@ -2,46 +2,45 @@
 using LibreCards.Core.Entities;
 using Xunit;
 
-namespace LibreCards.Tests.Gameplay
+namespace LibreCards.Tests.Gameplay;
+
+public class GameStatusTests
 {
-    public class GameStatusTests
+    private readonly IGameStatus _status;
+
+    public GameStatusTests()
     {
-        private readonly IGameStatus _status;
+        _status = new GameStatus();
+    }
 
-        public GameStatusTests()
-        {
-            _status = new GameStatus();
-        }
+    [Fact]
+    public void GameStatus_ShouldStartAsWaiting()
+    {
+        Assert.Equal(GameState.Waiting, _status.Current);
+    }
 
-        [Fact]
-        public void GameStatus_ShouldStartAsWaiting()
-        {
-            Assert.Equal(GameState.Waiting, _status.Current);
-        }
+    [Fact]
+    public void GameStatus_ShouldSwitchToProgress()
+    {
+        _status.SwitchToPlaying();
 
-        [Fact]
-        public void GameStatus_ShouldSwitchToProgress()
-        {
-            _status.SwitchToPlaying();
+        Assert.Equal(GameState.Playing, _status.Current);
+    }
 
-            Assert.Equal(GameState.Playing, _status.Current);
-        }
+    [Fact]
+    public void GameStatus_ShouldSwitchToJudging()
+    {
+        _status.SwitchToJudging();
 
-        [Fact]
-        public void GameStatus_ShouldSwitchToJudging()
-        {
-            _status.SwitchToJudging();
+        Assert.Equal(GameState.Judging, _status.Current);
+    }
 
-            Assert.Equal(GameState.Judging, _status.Current);
-        }
+    [Fact]
+    public void GameStatus_ShouldSwitchToWaiting()
+    {
+        _status.SwitchToJudging();
+        _status.SwitchToWaiting();
 
-        [Fact]
-        public void GameStatus_ShouldSwitchToWaiting()
-        {
-            _status.SwitchToJudging();
-            _status.SwitchToWaiting();
-
-            Assert.Equal(GameState.Waiting, _status.Current);
-        }
+        Assert.Equal(GameState.Waiting, _status.Current);
     }
 }
