@@ -4,17 +4,17 @@ namespace LibreCards.Core
 {
     public class GameStatus : IGameStatus
     {
-        private GameState _gameState;
+        public GameState CurrentState { get; private set; }
 
         public GameStatus()
         {
-            _gameState = GameState.Waiting;
+            CurrentState = GameState.Waiting;
         }
 
-        public bool IsInProgress => _gameState == GameState.InProgress;
+        public void SwitchToPlaying() => CurrentState = GameState.Playing;
 
-        public void SetInProgress() => _gameState = GameState.InProgress;
+        public void SwitchToWaiting() => CurrentState = GameState.Waiting;
 
-        public void SetWaiting() => _gameState = GameState.Waiting;
+        public void SwitchToJudging() => CurrentState = GameState.Judging;
     }
 }

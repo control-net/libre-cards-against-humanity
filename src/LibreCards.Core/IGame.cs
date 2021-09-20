@@ -9,5 +9,6 @@ namespace LibreCards.Core
         void StartGame();
         Template TemplateCard { get; }
         Guid JudgePlayerId { get; }
+        GameState GameState { get; }
     }
 }

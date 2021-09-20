@@ -1,8 +1,9 @@
 ﻿namespace LibreCards.Core.Entities
 {
-    internal enum GameState
+    public enum GameState
     {
         Waiting,
-        InProgress
+        Playing,
+        Judging
     }
 }

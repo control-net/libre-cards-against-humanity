@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LibreCards.Core
+namespace LibreCards.Core.Persistence
 {
     public class CardRepository : ICardRepository
     {

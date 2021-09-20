@@ -1,7 +1,7 @@
 ﻿using LibreCards.Core.Entities;
 using System.Collections.Generic;
 
-namespace LibreCards.Core
+namespace LibreCards.Core.Persistence
 {
     public interface IDataStorage
     {

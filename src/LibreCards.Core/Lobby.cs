@@ -9,66 +9,71 @@ namespace LibreCards.Core
     {
         private readonly IGameStatus _gameStatus;
 
-        public Lobby(int minimumPlayerCount, IGameStatus gameStatus)
-        {
-            MinimumPlayerCount = minimumPlayerCount;
-            MaximumPlayerCount = 10;
+        private readonly List<Player> _players = new List<Player>();
 
+        public Lobby(IGameStatus gameStatus)
+        {
             _gameStatus = gameStatus;
+
+            MinimumPlayerCount = 3;
+            MaximumPlayerCount = 10;
         }
+
+        public IReadOnlyCollection<Player> Players => _players.AsReadOnly();
 
         public int MinimumPlayerCount { get; private set; }
 
         public int MaximumPlayerCount { get; private set; }
 
-        public int PlayerCount => _players.Count;
+        public bool HasEnoughPlayers => _players.Count >= MinimumPlayerCount;
 
-        private readonly ICollection<Player> _players = new List<Player>();
+        public void SetMinimumPlayerCount(int count)
+        {
+            if (count < 1)
+                throw new ArgumentException("Cannot set minimum player count to zero or lower.");
 
-        public bool HasEnoughPlayers => PlayerCount >= MinimumPlayerCount;
+            if (count > MaximumPlayerCount)
+                throw new ArgumentException($"Cannot set minimum player count to more than the current maximum of {MaximumPlayerCount}.");
+
+            MinimumPlayerCount = count;
+        }
+
+        public void SetMaximumPlayerCount(int count)
+        {
+            if (count < 1)
+                throw new ArgumentException("Cannot set maximum player count to zero or lower.");
+
+            if (count < MinimumPlayerCount)
+                throw new ArgumentException($"Cannot set maximum player count to less than the current minimum of {MinimumPlayerCount}.");
+
+            if (count < _players.Count)
+                throw new ArgumentException("Cannot set maximum player count to less than the current player count.");
+
+            MaximumPlayerCount = count;
+        }
 
         public void AddPlayer(Player player)
         {
-            if (_gameStatus.IsInProgress)
-                throw new InvalidOperationException();
+            if (_gameStatus.CurrentState != GameState.Waiting)
+                throw new InvalidOperationException("Cannot add a player while the game is running.");
+
+            if (_players.Count == MaximumPlayerCount)
+                throw new InvalidOperationException("Cannot add a player, because the lobby is full.");
+
+            if (player is null)
+                throw new ArgumentNullException(nameof(player));
 
             _players.Add(player);
         }
 
-        public IEnumerable<Player> Players => _players;
-
         public void RemovePlayer(Guid id)
-        {
-            var player = Players.FirstOrDefault(p => p.Id == id);
-
-            if (player is null)
-                return;
-
-            _players.Remove(player);
-
-            if (PlayerCount < MaximumPlayerCount)
-                _gameStatus.SetWaiting();
-        }
-
-        public void SetMaxPlayerCount(int maxPlayerCount)
-        {
-            if (_gameStatus.IsInProgress)
-                throw new InvalidOperationException();
-
-            if (maxPlayerCount == 0 || maxPlayerCount < MinimumPlayerCount)
-                throw new ArgumentOutOfRangeException(nameof(maxPlayerCount));
-
-            MaximumPlayerCount = maxPlayerCount;
-        }
-
-        public Player GetPlayer(Guid id)
         {
             var player = _players.FirstOrDefault(p => p.Id == id);
 
             if (player is null)
-                throw new InvalidOperationException($"No player with id '{id}' found.");
+                throw new ArgumentException($"No player with id '{id}' exists.");
 
-            return player;
+            _players.Remove(player);
         }
     }
 }

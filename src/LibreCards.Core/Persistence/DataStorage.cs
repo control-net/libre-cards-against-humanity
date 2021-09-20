@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 
-namespace LibreCards.Core
+namespace LibreCards.Core.Persistence
 {
     public class DataStorage : IDataStorage
     {

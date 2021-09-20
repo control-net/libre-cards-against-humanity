@@ -1,4 +1,5 @@
 using LibreCards.Core;
+using LibreCards.Core.Persistence;
 using LibreCards.WebApp.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
 
@@ -26,10 +27,12 @@ namespace LibreCards.WebApp
             services.AddSingleton<IGame, Game>(s =>
             {
                 var gameStatus = new GameStatus();
-                var lobby = new Lobby(3, gameStatus);
+                var lobby = new Lobby(gameStatus);
                 var dataStorage = new DataStorage();
                 var cardRepository = new CardRepository(dataStorage);
-                return new Game(gameStatus, cardRepository, lobby);
+                var cardState = new CardState(cardRepository);
+                var judgePicker = new JudgePicker();
+                return new Game(gameStatus, cardState, lobby, judgePicker);
             });
 
             services.AddSingleton<IPlayerConnectionStorage, InMemoryPlayerConnectionStorage>();
