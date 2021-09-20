@@ -11,6 +11,7 @@ public class GameTests
     private readonly Mock<ICardRepository> _cardRepoMock;
     private readonly Mock<IGameStatus> _gameStatusMock;
     private readonly Mock<ILobby> _lobbyMock;
+    private readonly Mock<IJudgePicker> _judgePickerMock;
 
     private readonly IGame _game;
 
@@ -22,8 +23,9 @@ public class GameTests
         _cardRepoMock = new Mock<ICardRepository>();
         _gameStatusMock = new Mock<IGameStatus>();
         _lobbyMock = new Mock<ILobby>();
+        _judgePickerMock = new Mock<IJudgePicker>();
 
-        _game = new Game(_gameStatusMock.Object, _cardRepoMock.Object, _lobbyMock.Object);
+        _game = new Game(_gameStatusMock.Object, _cardRepoMock.Object, _lobbyMock.Object, _judgePickerMock.Object);
     }
 
     [Fact]

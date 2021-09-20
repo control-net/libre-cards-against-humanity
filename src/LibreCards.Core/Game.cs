@@ -8,23 +8,24 @@ namespace LibreCards.Core
 {
     public class Game : IGame
     {
-        public Guid JudgePlayerId { get; private set; }
-        private Queue<Guid> _judgeQueue;
-        
         private readonly IGameStatus _gameStatus;
         private readonly ICardRepository _cardRepository;
         private readonly ILobby _lobby;
+        private readonly IJudgePicker _judgePicker;
 
-        public ILobby Lobby => _lobby;
-
-        public Template TemplateCard { get; private set; }
-
-        public Game(IGameStatus gameStatus, ICardRepository cardRepository, ILobby lobby)
+        public Game(IGameStatus gameStatus, ICardRepository cardRepository, ILobby lobby, IJudgePicker judgePicker)
         {
             _gameStatus = gameStatus;
             _cardRepository = cardRepository;
             _lobby = lobby;
+            _judgePicker = judgePicker;
         }
+
+        public ILobby Lobby => _lobby;
+
+        public Guid JudgePlayerId => _judgePicker.CurrentJudgeId;
+
+        public Template TemplateCard { get; private set; }
 
         public void StartGame()
         {
@@ -35,18 +36,12 @@ namespace LibreCards.Core
                 throw new InvalidOperationException("Not enough players.");
 
             _gameStatus.SwitchToPlaying();
-            SetupJudgeQueue();
+            _judgePicker.PickNewJudge(_lobby.Players);
             SetupNewRound();
         }
 
         private void SetupNewRound()
         {
-            if(_judgeQueue.Count == 0)
-                SetupJudgeQueue();
-            
-            if(_judgeQueue.Count != 0)
-                JudgePlayerId = _judgeQueue.Dequeue();
-
             foreach(var player in _lobby.Players)
             {
                 var playerCards = player.Cards.ToList();
@@ -57,8 +52,5 @@ namespace LibreCards.Core
 
             TemplateCard = _cardRepository.DrawTemplate();
         }
-
-        private void SetupJudgeQueue()
-            => _judgeQueue = new Queue<Guid>(_lobby.Players.Select(p => p.Id).Reverse());
     }
 }
