@@ -3,7 +3,7 @@ using LibreCards.Core.Persistence;
 using Moq;
 using Xunit;
 
-namespace LibreCards.Tests
+namespace LibreCards.Tests.Repository
 {
     public class CardRepositoryTests
     {

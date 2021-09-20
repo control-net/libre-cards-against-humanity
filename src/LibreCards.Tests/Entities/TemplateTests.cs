@@ -1,7 +1,7 @@
 ﻿using LibreCards.Core.Entities;
 using Xunit;
 
-namespace LibreCards.Tests
+namespace LibreCards.Tests.Entities
 {
     public class TemplateTests
     {

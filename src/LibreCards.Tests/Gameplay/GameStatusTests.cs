@@ -1,7 +1,7 @@
 ﻿using LibreCards.Core;
 using Xunit;
 
-namespace LibreCards.Tests
+namespace LibreCards.Tests.Gameplay
 {
     public class GameStatusTests
     {
