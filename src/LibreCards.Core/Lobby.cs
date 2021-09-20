@@ -11,14 +11,6 @@ namespace LibreCards.Core
 
         private readonly List<Player> _players = new List<Player>();
 
-        public Lobby(int minimumPlayerCount, IGameStatus gameStatus)
-        {
-            MinimumPlayerCount = minimumPlayerCount;
-            MaximumPlayerCount = 10;
-
-            _gameStatus = gameStatus;
-        }
-
         public Lobby(IGameStatus gameStatus)
         {
             _gameStatus = gameStatus;

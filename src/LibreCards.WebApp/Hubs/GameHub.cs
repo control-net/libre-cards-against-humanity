@@ -75,14 +75,8 @@ namespace LibreCards.WebApp.Hubs
 
         public async Task StartGame()
         {
-            // TODO(Peter): Only the lobby owner (Player who has been in it the longest) can start the game
-
-            // FIXME(Peter): This will throw if the game cannot start for some reason.
             _game.StartGame();
 
-            // NOTE(Peter): We should probably reduce the number of calls to everyone here.
-            //              Technically the Client could request a template on their own when they
-            //              receive a GameStarted event.
             await Clients.All.SendAsync("GameStarted", new GameModel { JudgeId = _game.JudgePlayerId });
             await Clients.All.SendAsync("UpdateTemplate", _game.TemplateCard.Content, _game.TemplateCard.BlankCount);
 
@@ -105,8 +99,6 @@ namespace LibreCards.WebApp.Hubs
 
         public async Task RequestTemplate()
         {
-            // FIXME(Peter): The game might not be in progress...
-
             await Clients.Caller.SendAsync("UpdateTemplate", _game.TemplateCard.Content, _game.TemplateCard.BlankCount);
         }
 
