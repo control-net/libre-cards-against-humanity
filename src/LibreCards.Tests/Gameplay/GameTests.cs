@@ -14,6 +14,9 @@ public class GameTests
 
     private readonly IGame _game;
 
+    private const int TestCardsCount = 8;
+    private const string TestTemplate = "<BLANK>";
+
     public GameTests()
     {
         _cardRepoMock = new Mock<ICardRepository>();
@@ -26,7 +29,7 @@ public class GameTests
     [Fact]
     public void StartGame_NotEnoughPlayers_ShouldThrow()
     {
-        _gameStatusMock.Setup(s => s.Current).Returns(GameState.Waiting);
+        ArrangeReadyToStartGame();
         _lobbyMock.Setup(l => l.HasEnoughPlayers).Returns(false);
 
         Assert.Throws<InvalidOperationException>(() => _game.StartGame());
@@ -37,8 +40,8 @@ public class GameTests
     [InlineData(GameState.Judging)]
     public void StartGame_InProgress_ShouldThrow(GameState state)
     {
+        ArrangeReadyToStartGame();
         _gameStatusMock.Setup(s => s.Current).Returns(state);
-        _lobbyMock.Setup(l => l.HasEnoughPlayers).Returns(true);
 
         Assert.Throws<InvalidOperationException>(() => _game.StartGame());
     }
@@ -46,30 +49,31 @@ public class GameTests
     [Fact]
     public void StartGame_PlayerShouldGetCards()
     {
-        const int expectedCount = 8;
-
+        ArrangeReadyToStartGame();
         var player = new Player(Guid.NewGuid());
         _lobbyMock.Setup(l => l.Players).Returns(new[] { player });
-        _lobbyMock.Setup(l => l.HasEnoughPlayers).Returns(true);
-        _cardRepoMock.Setup(r => r.DrawCards(8)).Returns(new Card[expectedCount]);
-
+        
         _game.StartGame();
 
-        Assert.Equal(expectedCount, player.Cards.Count);
+        Assert.Equal(TestCardsCount, player.Cards.Count);
     }
 
     [Fact]
     public void StartGame_ShouldPresentTemplateCard()
     {
-        const string ExpectedTemplate = "Test <BLANK> template!";
-        
-        _gameStatusMock.Setup(s => s.Current).Returns(GameState.Waiting);
-        _lobbyMock.Setup(l => l.HasEnoughPlayers).Returns(true);
-        _lobbyMock.Setup(l => l.Players).Returns(new[] { new Player(Guid.NewGuid()), new Player(Guid.NewGuid()), new Player(Guid.NewGuid()) });
-        _cardRepoMock.Setup(r => r.DrawTemplate()).Returns(new Template(ExpectedTemplate));
+        ArrangeReadyToStartGame();
 
         _game.StartGame();
 
-        Assert.Equal(ExpectedTemplate, _game.TemplateCard.Content);
+        Assert.Equal(TestTemplate, _game.TemplateCard.Content);
+    }
+
+    private void ArrangeReadyToStartGame()
+    {
+        _gameStatusMock.Setup(s => s.Current).Returns(GameState.Waiting);
+        _lobbyMock.Setup(l => l.HasEnoughPlayers).Returns(true);
+        _lobbyMock.Setup(l => l.Players).Returns(new[] { new Player(Guid.NewGuid()), new Player(Guid.NewGuid()), new Player(Guid.NewGuid()) });
+        _cardRepoMock.Setup(r => r.DrawTemplate()).Returns(new Template(TestTemplate));
+        _cardRepoMock.Setup(r => r.DrawCards(8)).Returns(new Card[TestCardsCount]);
     }
 }
