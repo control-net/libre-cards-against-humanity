@@ -29,7 +29,7 @@ namespace LibreCards.Core
 
         public void AddPlayer(Player player)
         {
-            if (_gameStatus.IsInProgress)
+            if (_gameStatus.Current != GameState.Waiting)
                 throw new InvalidOperationException();
 
             _players.Add(player);
@@ -47,12 +47,12 @@ namespace LibreCards.Core
             _players.Remove(player);
 
             if (PlayerCount < MaximumPlayerCount)
-                _gameStatus.SetWaiting();
+                _gameStatus.SwitchToWaiting();
         }
 
         public void SetMaxPlayerCount(int maxPlayerCount)
         {
-            if (_gameStatus.IsInProgress)
+            if (_gameStatus.Current != GameState.Waiting)
                 throw new InvalidOperationException();
 
             if (maxPlayerCount == 0 || maxPlayerCount < MinimumPlayerCount)

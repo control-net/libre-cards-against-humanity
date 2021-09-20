@@ -1,4 +1,5 @@
 using LibreCards.Core;
+using LibreCards.Core.Persistence;
 using LibreCards.WebApp.Hubs;
 using Microsoft.AspNetCore.ResponseCompression;
 

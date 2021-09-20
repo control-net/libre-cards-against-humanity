@@ -1,11 +1,12 @@
 ﻿using LibreCards.Core;
+using LibreCards.Core.Entities;
 using Xunit;
 
 namespace LibreCards.Tests.Gameplay
 {
     public class GameStatusTests
     {
-        private readonly GameStatus _status;
+        private readonly IGameStatus _status;
 
         public GameStatusTests()
         {
@@ -15,26 +16,32 @@ namespace LibreCards.Tests.Gameplay
         [Fact]
         public void GameStatus_ShouldStartAsWaiting()
         {
-            Assert.False(_status.IsInProgress);
+            Assert.Equal(GameState.Waiting, _status.Current);
         }
 
         [Fact]
         public void GameStatus_ShouldSwitchToProgress()
         {
-            _status.SetInProgress();
+            _status.SwitchToPlaying();
 
-            Assert.True(_status.IsInProgress);
+            Assert.Equal(GameState.Playing, _status.Current);
         }
 
         [Fact]
-        public void GameStatus_ShouldSwitchToProgressAndThenToWaiting()
+        public void GameStatus_ShouldSwitchToJudging()
         {
-            _status.SetInProgress();
-            Assert.True(_status.IsInProgress);
+            _status.SwitchToJudging();
 
-            _status.SetWaiting();
+            Assert.Equal(GameState.Judging, _status.Current);
+        }
 
-            Assert.False(_status.IsInProgress);
+        [Fact]
+        public void GameStatus_ShouldSwitchToWaiting()
+        {
+            _status.SwitchToJudging();
+            _status.SwitchToWaiting();
+
+            Assert.Equal(GameState.Waiting, _status.Current);
         }
     }
 }

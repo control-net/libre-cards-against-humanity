@@ -26,6 +26,9 @@ public class LocalGameState
         if (connection is null)
             throw new ArgumentNullException(nameof(connection));
 
+        Cards = new List<CardModel>();
+        TemplateCard = string.Empty;
+
         _connection = connection;
 
         connection.On<PlayerModel>("PlayerJoined", OnPlayerJoined);

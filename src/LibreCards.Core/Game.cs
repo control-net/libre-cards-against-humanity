@@ -28,13 +28,13 @@ namespace LibreCards.Core
 
         public void StartGame()
         {
-            if (_gameStatus.IsInProgress)
+            if (_gameStatus.Current != GameState.Waiting)
                 return;
 
             if(!_lobby.HasEnoughPlayers)
                 throw new InvalidOperationException("Not enough players.");
 
-            _gameStatus.SetInProgress();
+            _gameStatus.SwitchToPlaying();
             SetupJudgeQueue();
             SetupNewRound();
         }
