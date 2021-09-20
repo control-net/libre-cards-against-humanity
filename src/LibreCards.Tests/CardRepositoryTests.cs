@@ -1,5 +1,5 @@
-﻿using LibreCards.Core;
-using LibreCards.Core.Entities;
+﻿using LibreCards.Core.Entities;
+using LibreCards.Core.Persistence;
 using Moq;
 using Xunit;
 

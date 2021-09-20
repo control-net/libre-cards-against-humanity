@@ -1,4 +1,5 @@
 ﻿using LibreCards.Core.Entities;
+using LibreCards.Core.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Linq;

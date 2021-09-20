@@ -1,7 +1,7 @@
 using LibreCards.Core;
 using LibreCards.Core.Entities;
+using LibreCards.Core.Persistence;
 using Moq;
-using System;
 using Xunit;
 
 namespace LibreCards.Tests
