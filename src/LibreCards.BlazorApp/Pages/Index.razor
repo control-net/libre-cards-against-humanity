@@ -46,7 +46,7 @@ else
     Status: @_statusMessage
 </p>
 
-@if(_gameState.LocalPlayerState == PlayerState.Playing)
+@if(_gameState?.LocalPlayerState == PlayerState.Playing)
 {
     <div class="card card-template">
         <span>@_gameState.TemplateCard</span>
@@ -64,7 +64,7 @@ else
 
 @code
 {
-    private string _usernameInput;
+    private string _usernameInput = string.Empty;
 
     private HubConnection? _hubConnection;
 
