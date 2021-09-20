@@ -6,7 +6,7 @@ namespace LibreCards.Tests.Entities
     public class TemplateTests
     {
         [Fact]
-        public void Constructor_EmptyString_ShouldThrow()
+        public void Constructor_NullString_ShouldThrow()
         {
             Assert.Throws<ArgumentNullException>(() => new Template(null));
         }
@@ -37,7 +37,7 @@ namespace LibreCards.Tests.Entities
         [InlineData("Single <BLANK>", 1)]
         [InlineData("<BLANK>", 1)]
         [InlineData("<BLANK><BLANK>", 2)]
-        [InlineData("A card with <BLANK> 2 <BLANK> blanks", 2)]
+        [InlineData("A card with \n<BLANK> 2 <BLANK> blanks", 2)]
         [InlineData("<BLANK> foo <BLANK> bar <BLANK>", 3)]
         public void CorrectInput_ShouldReturnCorrectBlankCount(string input, int expected)
         {

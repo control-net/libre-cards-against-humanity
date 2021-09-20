@@ -17,7 +17,7 @@ namespace LibreCards.Tests.Repository
         }
 
         [Fact]
-        public void CardRepository_DrawOneCard()
+        public void CardRepository_DefaultDraw_ShouldReturnOneCard()
         {
             ArrangeStorage(new[] { new Card { Id = 1, Text = "CardText" } });
 
@@ -27,9 +27,9 @@ namespace LibreCards.Tests.Repository
         }
 
         [Fact]
-        public void CardRepository_DrawManyCards()
+        public void CardRepository_DrawManyCards_ShouldReturnCorrectNumberOfCards()
         {
-            ArrangeStorage(4);
+            ArrangeStorageWithNumberOfCards(4);
 
             var cards = _cardRepository.DrawCards(2).ToList();
             cards.AddRange(_cardRepository.DrawCards(2));
@@ -38,7 +38,7 @@ namespace LibreCards.Tests.Repository
         }
 
         [Fact]
-        public void CardRepository_DrawTemplate()
+        public void CardRepository_DrawTemplate_ShouldReturnValidTemplate()
         {
             var expected = new Template(Template.BlankPlaceholder);
             _dataStorageMock.Setup(ds => ds.DefaultTemplates).Returns(new[] { expected });
@@ -53,7 +53,7 @@ namespace LibreCards.Tests.Repository
         private void ArrangeStorage(IEnumerable<Card> cards)
             => _dataStorageMock.Setup(ds => ds.DefaultCards).Returns(cards);
 
-        private void ArrangeStorage(int count)
+        private void ArrangeStorageWithNumberOfCards(int count)
             => _dataStorageMock.Setup(ds => ds.DefaultCards).Returns(Enumerable.Range(1, count).Select(i => new Card { Id = i, Text = "CardText" }));
     }
 }
