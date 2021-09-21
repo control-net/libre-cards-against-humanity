@@ -83,7 +83,7 @@ namespace LibreCards.WebApp.Hubs
             foreach(var user in _connections.Connections)
             {
                 var gameUser = _game.Lobby.Players.FirstOrDefault(p => p.Id == user.Value.Id);
-                await Clients.Client(user.Key).SendAsync("UpdateCards", gameUser.Cards.Select(c => c.Text));
+                await Clients.Client(user.Key).SendAsync("UpdateCards", gameUser.Cards.Select(c => new CardModel(c.Id, c.Text)));
             }
         }
 
