@@ -3,120 +3,123 @@ using LibreCards.Core.Entities;
 using LibreCards.Core.Entities.Client;
 using Microsoft.AspNetCore.SignalR;
 
-namespace LibreCards.WebApp.Hubs
+namespace LibreCards.WebApp.Hubs;
+
+public class GameHub : Hub
 {
-    public class GameHub : Hub
+    private readonly IGame _game;
+
+    private readonly IPlayerConnectionStorage _connections;
+
+    public GameHub(IGame game, IPlayerConnectionStorage connections)
     {
-        private readonly IGame _game;
+        _game = game;
+        _connections = connections;
+    }
 
-        private readonly IPlayerConnectionStorage _connections;
+    public LobbyModel GetLobbyState() => new(_game.Lobby);
 
-        public GameHub(IGame game, IPlayerConnectionStorage connections)
+    public async Task Join(string username)
+    {
+        var connId = Context.ConnectionId;
+
+        if(_connections.ConnectionExists(connId))
         {
-            _game = game;
-            _connections = connections;
+            Console.WriteLine("The user already received a GUID");
+            return;
         }
 
-        public async Task Join(string username)
+        if(_connections.UsernameIsTaken(username))
         {
-            var connId = Context.ConnectionId;
-
-            if(_connections.ConnectionExists(connId))
-            {
-                Console.WriteLine("The user already received a GUID");
-                return;
-            }
-
-            if(_connections.UsernameIsTaken(username))
-            {
-                Console.WriteLine($"Someone already has the same username (${username})");
-                return;
-            }
-
-            var id = Guid.NewGuid();
-            var model = new PlayerModel(id, username);
-
-            _connections.AddConnection(connId, model);
-
-            await Clients.Others.SendAsync("PlayerJoined", model);
-            await Clients.Caller.SendAsync("IdAssigned", id);
-
-            _game.Lobby.AddPlayer(new Player(id)
-            {
-                Username = username
-            });
+            Console.WriteLine($"Someone already has the same username (${username})");
+            return;
         }
 
-        public async Task Leave(Guid id)
+        var id = Guid.NewGuid();
+        var model = new PlayerModel(id, username);
+
+        _connections.AddConnection(connId, model);
+
+        await Clients.Others.SendAsync("PlayerJoined", model);
+        await Clients.Caller.SendAsync("IdAssigned", id);
+
+        _game.Lobby.AddPlayer(new Player(id)
         {
-            if(!_connections.ConnectionExists(Context.ConnectionId))
-            {
-                // This connection isn't even registered
-                return;
-            }
+            Username = username
+        });
 
-            var storedConn = _connections.GetConnectionIdByPlayerId(id);
-            if (storedConn is null || storedConn != Context.ConnectionId)
-            {
-                // The provided GUID doesn't match this connection
-                return;
-            }
+        await Clients.All.SendAsync("LobbyUpdated", new LobbyModel(_game.Lobby));
+    }
 
-            _game.Lobby.RemovePlayer(id);
-            _connections.RemoveConnection(Context.ConnectionId);
-
-            await Clients.Others.SendAsync("PlayerLeft", id);
+    public async Task Leave(Guid id)
+    {
+        if(!_connections.ConnectionExists(Context.ConnectionId))
+        {
+            // This connection isn't even registered
+            return;
         }
 
-        public async Task GetPlayers()
+        var storedConn = _connections.GetConnectionIdByPlayerId(id);
+        if (storedConn is null || storedConn != Context.ConnectionId)
         {
-            await Clients.Caller.SendAsync("PlayerList", _game.Lobby.Players.Select(p => new PlayerModel(p.Id, p.Username)));
+            // The provided GUID doesn't match this connection
+            return;
         }
 
-        public async Task StartGame()
+        _game.Lobby.RemovePlayer(id);
+        _connections.RemoveConnection(Context.ConnectionId);
+
+        await Clients.Others.SendAsync("PlayerLeft", id);
+    }
+
+    public async Task GetPlayers()
+    {
+        await Clients.Caller.SendAsync("PlayerList", _game.Lobby.Players.Select(p => new PlayerModel(p.Id, p.Username)));
+    }
+
+    public async Task StartGame()
+    {
+        _game.StartGame();
+
+        await Clients.All.SendAsync("GameStarted", new GameModel { JudgeId = _game.JudgePlayerId });
+        await Clients.All.SendAsync("UpdateTemplate", _game.TemplateCard.Content, _game.TemplateCard.BlankCount);
+
+        foreach(var user in _connections.Connections)
         {
-            _game.StartGame();
+            var gameUser = _game.Lobby.Players.FirstOrDefault(p => p.Id == user.Value.Id);
+            await Clients.Client(user.Key).SendAsync("UpdateCards", gameUser.Cards.Select(c => new CardModel(c.Id, c.Text)));
+        }
+    }
 
-            await Clients.All.SendAsync("GameStarted", new GameModel { JudgeId = _game.JudgePlayerId });
-            await Clients.All.SendAsync("UpdateTemplate", _game.TemplateCard.Content, _game.TemplateCard.BlankCount);
+    public async Task GetMyCards(Guid id)
+    {
+        var player = _game.Lobby.Players.FirstOrDefault(p => p.Id == id);
 
-            foreach(var user in _connections.Connections)
-            {
-                var gameUser = _game.Lobby.Players.FirstOrDefault(p => p.Id == user.Value.Id);
-                await Clients.Client(user.Key).SendAsync("UpdateCards", gameUser.Cards.Select(c => new CardModel(c.Id, c.Text)));
-            }
+        if (player is null)
+            return;
+
+        await Clients.Caller.SendAsync("UpdateCards", player.Cards.Select(c => new CardModel(c.Id, c.Text)));
+    }
+
+    public async Task RequestTemplate()
+    {
+        await Clients.Caller.SendAsync("UpdateTemplate", _game.TemplateCard.Content, _game.TemplateCard.BlankCount);
+    }
+
+    public override async Task OnDisconnectedAsync(Exception exception)
+    {
+        await base.OnDisconnectedAsync(exception);
+
+        if(!_connections.ConnectionExists(Context.ConnectionId))
+        {
+            // User wasn't registered...
+            return;
         }
 
-        public async Task GetMyCards(Guid id)
-        {
-            var player = _game.Lobby.Players.FirstOrDefault(p => p.Id == id);
+        var id = _connections.GetByConnectionId(Context.ConnectionId).Id;
+        _game.Lobby.RemovePlayer(id);
+        _connections.RemoveConnection(Context.ConnectionId);
 
-            if (player is null)
-                return;
-
-            await Clients.Caller.SendAsync("UpdateCards", player.Cards.Select(c => new CardModel(c.Id, c.Text)));
-        }
-
-        public async Task RequestTemplate()
-        {
-            await Clients.Caller.SendAsync("UpdateTemplate", _game.TemplateCard.Content, _game.TemplateCard.BlankCount);
-        }
-
-        public override async Task OnDisconnectedAsync(Exception exception)
-        {
-            await base.OnDisconnectedAsync(exception);
-
-            if(!_connections.ConnectionExists(Context.ConnectionId))
-            {
-                // User wasn't registered...
-                return;
-            }
-
-            var id = _connections.GetByConnectionId(Context.ConnectionId).Id;
-            _game.Lobby.RemovePlayer(id);
-            _connections.RemoveConnection(Context.ConnectionId);
-
-            await Clients.Others.SendAsync("PlayerLeft", id);
-        }
+        await Clients.Others.SendAsync("PlayerLeft", id);
     }
 }

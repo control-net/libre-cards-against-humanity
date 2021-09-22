@@ -7,7 +7,7 @@ public class LocalGameState
 {
     public event EventHandler? GameStateChanged;
 
-    public PlayerState LocalPlayerState { get; private set; } = PlayerState.NotInLobby;
+    public PlayerState LocalPlayerState { get; private set; }
 
     public Guid LocalPlayerId { get; private set; }
 
@@ -20,6 +20,8 @@ public class LocalGameState
     private List<PlayerModel> _players = new();
 
     private readonly HubConnection _connection;
+
+    public LobbyModel LobbyModel { get; private set; }
 
     public LocalGameState(HubConnection connection)
     {
@@ -37,6 +39,14 @@ public class LocalGameState
         connection.On<GameModel>("GameStarted", OnGameStarted);
         connection.On<string, int>("UpdateTemplate", OnUpdateTemplate);
         connection.On<IEnumerable<CardModel>>("UpdateCards", OnUpdateCards);
+
+        connection.On<LobbyModel>("LobbyUpdated", OnLobbyUpdated);
+    }
+
+    private void OnLobbyUpdated(LobbyModel lobbyModel)
+    {
+        LobbyModel = lobbyModel;
+        GameStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnUpdateCards(IEnumerable<CardModel> cards)
@@ -66,7 +76,8 @@ public class LocalGameState
 
     public async ValueTask InitializeAsync()
     {
-        await _connection.SendAsync("GetPlayers");
+        LocalPlayerState = PlayerState.NotInLobby;
+        LobbyModel = await _connection.InvokeAsync<LobbyModel>("GetLobbyState");
     }
 
     private void OnIdAssigned(Guid id)

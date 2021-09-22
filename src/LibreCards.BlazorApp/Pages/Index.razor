@@ -1,42 +1,46 @@
 ﻿@page "/"
 @implements IAsyncDisposable
 
-@if(_gameState is null)
+@if (_gameState is null || _gameState.LobbyModel is null)
 {
     <p>Connecting to a server...</p>
 }
 else
 {
-    <h1>Welcome to Libre Cards Against Humanity!</h1>
-
-    <p><b>Players</b></p>
-
-    @if(_gameState.LocalPlayerState != PlayerState.NotInLobby)
+    @if (_gameState.LocalPlayerState != PlayerState.NotInLobby)
     {
         <p>Your ID: @_gameState.LocalPlayerId</p>
     }
 
-    <table>
-        <tr>
-            <th>Username</th>
-            <th>ID</th>
-        </tr>
-        @foreach(var player in _gameState.Players)
-        {
-        <tr>
-            <td>@player.Username</td>
-            <td>@player.Id</td>
-        </tr>
-        }
-    </table>
-
-    @if(_gameState.LocalPlayerState == PlayerState.NotInLobby)
+    @if (_gameState.LocalPlayerState == PlayerState.NotInLobby)
     {
+        <h2>Current Lobby</h2>
+
+        <p>There are @_gameState.LobbyModel.PlayerCount out of @_gameState.LobbyModel.MaximumPlayers player(s) in this lobby.</p>
+
         <input type="text" @bind-value="_usernameInput" />
         <button @onclick="async () => await JoinGameAsync()">Join Lobby</button>
     }
+    else
+    {
+        <p><b>Players</b></p>
 
-    @if(_gameState.LocalPlayerState == PlayerState.InLobby)
+        <table>
+            <tr>
+                <th>Username</th>
+                <th>ID</th>
+            </tr>
+            @foreach (var player in _gameState.Players)
+            {
+                <tr>
+                    <td>@player.Username</td>
+                    <td>@player.Id</td>
+                </tr>
+            }
+        </table>
+    }
+
+    @if (_gameState.LocalPlayerState == PlayerState.InLobby)
     {
         <button @onclick="async () => await StartGameAsync()">Start Game</button>
     }
@@ -46,14 +50,14 @@ else
     Status: @_statusMessage
 </p>
 
-@if(_gameState?.LocalPlayerState == PlayerState.Playing)
+@if (_gameState?.LocalPlayerState == PlayerState.Playing)
 {
     <div class="card card-template">
         <span>@_gameState.TemplateCard</span>
     </div>
 
     <div class="card-drawer">
-        @foreach(var card in _gameState.Cards ?? new CardModel[0])
+        @foreach (var card in _gameState.Cards ?? new CardModel[0])
         {
             <div class="card card-hand">
                 <span>@card.Text</span>
