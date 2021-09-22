@@ -23,20 +23,24 @@ public class GameHub : Hub
     {
         var connId = Context.ConnectionId;
 
-        if(_connections.ConnectionExists(connId))
+        if (_connections.ConnectionExists(connId))
         {
             Console.WriteLine("The user already received a GUID");
             return;
         }
 
-        if(_connections.UsernameIsTaken(username))
+        if (_connections.UsernameIsTaken(username))
         {
             Console.WriteLine($"Someone already has the same username (${username})");
             return;
         }
 
         var id = Guid.NewGuid();
-        var model = new PlayerModel(id, username);
+        var model = new PlayerModel
+        {
+            Id = id,
+            Username = username
+        };
 
         _connections.AddConnection(connId, model);
 
@@ -53,7 +57,7 @@ public class GameHub : Hub
 
     public async Task Leave(Guid id)
     {
-        if(!_connections.ConnectionExists(Context.ConnectionId))
+        if (!_connections.ConnectionExists(Context.ConnectionId))
         {
             // This connection isn't even registered
             return;
@@ -74,7 +78,7 @@ public class GameHub : Hub
 
     public async Task GetPlayers()
     {
-        await Clients.Caller.SendAsync("PlayerList", _game.Lobby.Players.Select(p => new PlayerModel(p.Id, p.Username)));
+        await Clients.Caller.SendAsync("PlayerList", _game.Lobby.Players.Select(p => PlayerModel.FromEntity));
     }
 
     public async Task StartGame()
@@ -84,7 +88,7 @@ public class GameHub : Hub
         await Clients.All.SendAsync("GameStarted", new GameModel { JudgeId = _game.JudgePlayerId });
         await Clients.All.SendAsync("UpdateTemplate", _game.TemplateCard.Content, _game.TemplateCard.BlankCount);
 
-        foreach(var user in _connections.Connections)
+        foreach (var user in _connections.Connections)
         {
             var gameUser = _game.Lobby.Players.FirstOrDefault(p => p.Id == user.Value.Id);
             await Clients.Client(user.Key).SendAsync("UpdateCards", gameUser.Cards.Select(c => new CardModel(c.Id, c.Text)));
@@ -110,7 +114,7 @@ public class GameHub : Hub
     {
         await base.OnDisconnectedAsync(exception);
 
-        if(!_connections.ConnectionExists(Context.ConnectionId))
+        if (!_connections.ConnectionExists(Context.ConnectionId))
         {
             // User wasn't registered...
             return;

@@ -1,0 +1,17 @@
+﻿<h3>PlayersView</h3>
+
+<p><b>Players</b></p>
+
+<table>
+    <tr>
+        <th>Username</th>
+        <th>ID</th>
+    </tr>
+    @foreach (var player in Players)
+    {
+        <tr>
+            <td>@player.Username</td>
+            <td>@player.Id</td>
+        </tr>
+    }
+</table>
