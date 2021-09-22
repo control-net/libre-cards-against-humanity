@@ -8,7 +8,7 @@ public partial class Index : IAsyncDisposable
 
     private HubConnection? _hubConnection;
 
-    private LocalGameState? _gameState;
+    private LocalGameState? _state;
 
     private string _statusMessage = "Connecting to a server...";
 
@@ -18,12 +18,12 @@ public partial class Index : IAsyncDisposable
             .WithUrl("https://localhost:5001/signalr/cardsgame")
             .Build();
 
-        _gameState = new LocalGameState(_hubConnection);
-        _gameState.GameStateChanged += (s, args) => StateHasChanged();
+        _state = new LocalGameState(_hubConnection);
+        _state.GameStateChanged += (s, args) => StateHasChanged();
 
         await _hubConnection.StartAsync();
 
-        await _gameState.InitializeAsync();
+        await _state.InitializeAsync();
 
         _statusMessage = "Hub Connection established";
         StateHasChanged();

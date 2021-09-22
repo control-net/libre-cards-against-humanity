@@ -12,4 +12,7 @@ public partial class PlayersView
 
     [Parameter]
     public IEnumerable<PlayerModel> Players { get; set; }
+
+    [Parameter]
+    public Guid LocalPlayerId {  get; set; }
 }
