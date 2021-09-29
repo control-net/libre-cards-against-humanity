@@ -6,6 +6,8 @@ public class LocalGameState
 {
     public event EventHandler? GameStateChanged;
 
+    public event EventHandler<string>? OnError;
+
     private readonly HubConnection _connection;
 
     public LobbyModel? Lobby { get; private set; }
@@ -21,8 +23,15 @@ public class LocalGameState
 
         _connection.On<LobbyModel>("LobbyUpdated", OnLobbyUpdated);
         _connection.On<GameModel>("GameUpdated", OnGameUpdated);
+        _connection.On<string>("Exception", OnException);
 
         Game = new GameModel();
+    }
+
+    private void OnException(string message)
+    {
+        OnError?.Invoke(this, message);
+        GameStateChanged?.Invoke(this, EventArgs.Empty);
     }
 
     internal async ValueTask InitializeAsync()

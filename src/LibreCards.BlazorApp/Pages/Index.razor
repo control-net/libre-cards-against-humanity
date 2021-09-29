@@ -6,6 +6,8 @@
 }
 else
 {
+    <ErrorView ErrorMessage="@_errMessage" />
+
     @if (_state.Game.LocalPlayerState != PlayerState.NotInLobby)
     {
         <p>Your ID: @_state.Game.LocalPlayerId</p>

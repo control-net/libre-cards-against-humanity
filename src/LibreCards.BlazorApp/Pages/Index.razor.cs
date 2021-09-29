@@ -12,6 +12,8 @@ public partial class Index : IAsyncDisposable
 
     private string _statusMessage = "Connecting to a server...";
 
+    private string? _errMessage;
+
     protected override async Task OnInitializedAsync()
     {
         _hubConnection = new HubConnectionBuilder()
@@ -20,6 +22,7 @@ public partial class Index : IAsyncDisposable
 
         _state = new LocalGameState(_hubConnection);
         _state.GameStateChanged += (s, args) => StateHasChanged();
+        _state.OnError += (s, msg) => _errMessage = msg;
 
         await _hubConnection.StartAsync();
 

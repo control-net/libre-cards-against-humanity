@@ -25,13 +25,13 @@ public class GameHub : Hub
 
         if (_connections.ConnectionExists(connId))
         {
-            Console.WriteLine("The user already received a GUID");
+            await SendError("The user already received a GUID");
             return;
         }
 
         if (_connections.UsernameIsTaken(username))
         {
-            Console.WriteLine($"Someone already has the same username (${username})");
+            await SendError($"Someone already has the same username ({username})");
             return;
         }
 
@@ -44,10 +44,11 @@ public class GameHub : Hub
 
         _connections.AddConnection(connId, model);
 
-        _game.Lobby.AddPlayer(new Player(id)
-        {
-            Username = username
-        });
+        await ExecuteSafelyAsync(() =>
+            _game.Lobby.AddPlayer(new Player(id)
+            {
+                Username = username
+            }));
 
         await Clients.All.SendAsync("LobbyUpdated", new LobbyModel(_game.Lobby));
         await SendUpdatedGameModelAsync();
@@ -64,7 +65,7 @@ public class GameHub : Hub
 
             var gameModel = new GameModel
             {
-                LocalPlayerState = GetPlayerState(gameUser),
+                LocalPlayerState = GetPlayerState(),
                 Cards = gameUser.Cards.Select(CardModel.FromEntity),
                 JudgeId = _game.JudgePlayerId,
                 LocalPlayerId = gameUser.Id,
@@ -76,7 +77,7 @@ public class GameHub : Hub
         }
     }
 
-    private PlayerState GetPlayerState(Player p)
+    private PlayerState GetPlayerState()
     {
         if (_game.GameState == GameState.Waiting)
             return PlayerState.InLobby;
@@ -112,33 +113,8 @@ public class GameHub : Hub
 
     public async Task StartGame()
     {
-        _game.StartGame();
-
-        //await Clients.All.SendAsync("GameStarted", new GameModel { JudgeId = _game.JudgePlayerId });
-        //await Clients.All.SendAsync("UpdateTemplate", _game.TemplateCard.Content, _game.TemplateCard.BlankCount);
-
-        foreach (var user in _connections.Connections)
-        {
-            var gameUser = _game.Lobby.Players.FirstOrDefault(p => p.Id == user.Value.Id);
-            //await Clients.Client(user.Key).SendAsync("UpdateCards", gameUser.Cards.Select(c => new CardModel(c.Id, c.Text)));
-        }
-
+        await ExecuteSafelyAsync(() => _game.StartGame());
         await SendUpdatedGameModelAsync();
-    }
-
-    public async Task GetMyCards(Guid id)
-    {
-        var player = _game.Lobby.Players.FirstOrDefault(p => p.Id == id);
-
-        if (player is null)
-            return;
-
-        await Clients.Caller.SendAsync("UpdateCards", player.Cards.Select(c => new CardModel(c.Id, c.Text)));
-    }
-
-    public async Task RequestTemplate()
-    {
-        await Clients.Caller.SendAsync("UpdateTemplate", _game.TemplateCard.Content, _game.TemplateCard.BlankCount);
     }
 
     public override async Task OnDisconnectedAsync(Exception exception)
@@ -155,7 +131,29 @@ public class GameHub : Hub
         _game.Lobby.RemovePlayer(id);
         _connections.RemoveConnection(Context.ConnectionId);
 
-        //await Clients.Others.SendAsync("PlayerLeft", id);
         await Clients.All.SendAsync("LobbyUpdated", new LobbyModel(_game.Lobby));
     }
+
+    private async Task ExecuteSafelyAsync(Func<Task> task)
+    {
+        try
+        {
+            await task();
+        }
+        catch (Exception e)
+        {
+            await SendError(e.Message);
+        }
+    }
+
+    private Task ExecuteSafelyAsync(Action task)
+    {
+        return ExecuteSafelyAsync(() =>
+        {
+            task?.Invoke();
+            return Task.CompletedTask;
+        });
+    }
+
+    private Task SendError(string m) => Clients.Caller.SendAsync("Exception", m);
 }
