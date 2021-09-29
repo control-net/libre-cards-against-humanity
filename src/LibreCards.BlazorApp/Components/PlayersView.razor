@@ -1,0 +1,24 @@
+﻿<h3>PlayersView</h3>
+
+<p><b>Players</b></p>
+
+<table>
+    <tr>
+        <th></th>
+        <th>Username</th>
+        <th>ID</th>
+    </tr>
+    @foreach (var player in Players)
+    {
+        <tr>
+            <td>
+                @if(player.Id == LocalPlayerId)
+                {
+                    <b>YOU</b>
+                }
+            </td>
+            <td>@player.Username</td>
+            <td>@player.Id</td>
+        </tr>
+    }
+</table>

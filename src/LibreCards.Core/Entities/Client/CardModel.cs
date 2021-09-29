@@ -1,4 +1,6 @@
-﻿namespace LibreCards.Core.Entities.Client
+﻿using System;
+
+namespace LibreCards.Core.Entities.Client
 {
     public class CardModel
     {
@@ -10,6 +12,11 @@
         {
             Id = id;
             Text = text;
+        }
+
+        public static CardModel FromEntity(Card card)
+        {
+            return new CardModel(card.Id, card.Text);
         }
     }
 }

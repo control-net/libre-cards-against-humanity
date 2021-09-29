@@ -1,109 +1,52 @@
 ﻿@page "/"
-@implements IAsyncDisposable
 
-@if(_gameState is null)
+@if (_state is null || _state.Lobby is null)
 {
     <p>Connecting to a server...</p>
 }
 else
 {
-    <h1>Welcome to Libre Cards Against Humanity!</h1>
+    <ErrorView ErrorMessage="@_errMessage" />
 
-    <p><b>Players</b></p>
-
-    @if(_gameState.LocalPlayerState != PlayerState.NotInLobby)
+    @if (_state.Game.LocalPlayerState != PlayerState.NotInLobby)
     {
-        <p>Your ID: @_gameState.LocalPlayerId</p>
+        <p>Your ID: @_state.Game.LocalPlayerId</p>
     }
 
-    <table>
-        <tr>
-            <th>Username</th>
-            <th>ID</th>
-        </tr>
-        @foreach(var player in _gameState.Players)
-        {
-        <tr>
-            <td>@player.Username</td>
-            <td>@player.Id</td>
-        </tr>
-        }
-    </table>
-
-    @if(_gameState.LocalPlayerState == PlayerState.NotInLobby)
+    @if (_state.Game.LocalPlayerState == PlayerState.NotInLobby)
     {
+        <LobbyView LobbyModel="@_state.Lobby" />
+
         <input type="text" @bind-value="_usernameInput" />
         <button @onclick="async () => await JoinGameAsync()">Join Lobby</button>
     }
+    else
+    {
+        <PlayersView Players="@_state.Game.Players" LocalPlayerId="@_state.Game.LocalPlayerId" />
+    }
 
-    @if(_gameState.LocalPlayerState == PlayerState.InLobby)
+    @if (_state.Game.LocalPlayerState == PlayerState.InLobby)
     {
         <button @onclick="async () => await StartGameAsync()">Start Game</button>
     }
+
+    @if (_state.Game.LocalPlayerState == PlayerState.Playing)
+    {
+        <div class="card card-template">
+            <span>@_state.Game.Template.Text</span>
+        </div>
+
+        <div class="card-drawer">
+            @foreach (var card in _state.Game.Cards ?? new CardModel[0])
+            {
+                <div class="card card-hand">
+                    <span>@card.Text</span>
+                </div>
+            }
+        </div>
+    }
 }
 
-<p>
+<pre>
     Status: @_statusMessage
-</p>
-
-@if(_gameState?.LocalPlayerState == PlayerState.Playing)
-{
-    <div class="card card-template">
-        <span>@_gameState.TemplateCard</span>
-    </div>
-
-    <div class="card-drawer">
-        @foreach(var card in _gameState.Cards ?? new CardModel[0])
-        {
-            <div class="card card-hand">
-                <span>@card.Text</span>
-            </div>
-        }
-    </div>
-}
-
-@code
-{
-    private string _usernameInput = string.Empty;
-
-    private HubConnection? _hubConnection;
-
-    private LocalGameState? _gameState;
-
-    private string _statusMessage = "Connecting to a server...";
-
-    protected override async Task OnInitializedAsync()
-    {
-        _hubConnection = new HubConnectionBuilder()
-            .WithUrl("https://localhost:5001/signalr/cardsgame")
-            .Build();
-
-        _gameState = new LocalGameState(_hubConnection);
-        _gameState.GameStateChanged += (s, args) => StateHasChanged();
-
-        await _hubConnection.StartAsync();
-
-        await _gameState.InitializeAsync();
-
-        _statusMessage = "Hub Connection established";
-        StateHasChanged();
-    }
-
-    private async ValueTask JoinGameAsync()
-    {
-        await _hubConnection.SendAsync("Join", _usernameInput);
-    }
-
-    private async ValueTask StartGameAsync()
-    {
-        await _hubConnection.SendAsync("StartGame");
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_hubConnection is not null)
-        {
-            await _hubConnection.DisposeAsync();
-        }
-    }
-}
+</pre>
