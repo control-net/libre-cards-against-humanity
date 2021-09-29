@@ -113,7 +113,8 @@ public class GameHub : Hub
 
     public async Task StartGame()
     {
-        await ExecuteSafelyAsync(() => _game.StartGame());
+        var id = _connections.GetByConnectionId(Context.ConnectionId).Id;
+        await ExecuteSafelyAsync(() => _game.StartGame(id));
         await SendUpdatedGameModelAsync();
     }
 

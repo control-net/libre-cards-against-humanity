@@ -6,9 +6,10 @@ namespace LibreCards.Core
     public interface IGame
     {
         ILobby Lobby { get; }
-        void StartGame();
+        void StartGame(Guid playerId);
         Template TemplateCard { get; }
         Guid JudgePlayerId { get; }
+        Guid LobbyOwnerId { get; }
         GameState GameState { get; }
     }
 }

@@ -26,13 +26,18 @@ namespace LibreCards.Core
 
         public GameState GameState => _gameStatus.CurrentState;
 
-        public void StartGame()
+        public Guid LobbyOwnerId => _lobby.OwnerId;
+
+        public void StartGame(Guid playerId)
         {
             if (_gameStatus.CurrentState != GameState.Waiting)
                 throw new InvalidOperationException("Game is already in progress.");
 
             if(!_lobby.HasEnoughPlayers)
                 throw new InvalidOperationException("Not enough players.");
+
+            if (playerId != LobbyOwnerId)
+                throw new InvalidOperationException("Only the lobby owner can start the game.");
 
             _gameStatus.SwitchToPlaying();
             SetupNewRound();
