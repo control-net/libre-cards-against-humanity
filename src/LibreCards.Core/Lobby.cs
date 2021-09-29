@@ -27,6 +27,8 @@ namespace LibreCards.Core
 
         public bool HasEnoughPlayers => _players.Count >= MinimumPlayerCount;
 
+        public Guid OwnerId => _players.FirstOrDefault()?.Id ?? Guid.Empty;
+
         public void SetMinimumPlayerCount(int count)
         {
             if (count < 1)

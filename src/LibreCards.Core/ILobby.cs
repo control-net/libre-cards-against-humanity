@@ -14,5 +14,6 @@ namespace LibreCards.Core
         IReadOnlyCollection<Player> Players { get; }
         void AddPlayer(Player player);
         void RemovePlayer(Guid id);
+        Guid OwnerId { get; }
     }
 }

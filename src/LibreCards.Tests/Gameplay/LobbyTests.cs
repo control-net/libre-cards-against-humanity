@@ -159,4 +159,44 @@ public class LobbyTests
 
         Assert.Empty(_lobby.Players);
     }
+
+    [Fact]
+    public void LobbyOwnerId_EmptyLobby_ShouldReturnDefault()
+    {
+        var expected = Guid.Empty;
+
+        Assert.Equal(expected, _lobby.OwnerId);
+    }
+
+    [Fact]
+    public void LobbyOwnerId_SinglePlayer_ShouldReturnTheirId()
+    {
+        var expected = Guid.NewGuid();
+        _lobby.AddPlayer(new Player(expected));
+
+        Assert.Equal(expected, _lobby.OwnerId);
+    }
+
+    [Fact]
+    public void LobbyOwnerId_ManyPlayers_ShouldReturnFirstPlayerId()
+    {
+        var expected = Guid.NewGuid();
+        _lobby.AddPlayer(new Player(expected));
+        _lobby.AddPlayer(new Player(Guid.NewGuid()));
+
+        Assert.Equal(expected, _lobby.OwnerId);
+    }
+
+    [Fact]
+    public void LobbyOwnerId_ManyPlayersFirstLeaves_ShouldReturnSecondPlayerId()
+    {
+        var first = Guid.NewGuid();
+        var expected = Guid.NewGuid();
+        _lobby.AddPlayer(new Player(first));
+        _lobby.AddPlayer(new Player(expected));
+        _lobby.AddPlayer(new Player(Guid.NewGuid()));
+        _lobby.RemovePlayer(first);
+
+        Assert.Equal(expected, _lobby.OwnerId);
+    }
 }
