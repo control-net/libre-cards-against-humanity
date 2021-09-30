@@ -14,7 +14,8 @@ public class GameTests
 
     private readonly IGame _game;
 
-    private readonly Guid LobbyOwnerId = Guid.NewGuid();
+    private readonly Player LobbyOwner = new(Guid.NewGuid());
+    private readonly Player JudgePlayer = new(Guid.NewGuid());
 
     public GameTests()
     {
@@ -59,7 +60,7 @@ public class GameTests
         ArrangeReadyToStartGame();
         _lobbyMock.Setup(l => l.HasEnoughPlayers).Returns(false);
 
-        Assert.Throws<InvalidOperationException>(() => _game.StartGame(LobbyOwnerId));
+        Assert.Throws<InvalidOperationException>(() => _game.StartGame(LobbyOwner.Id));
     }
 
     [Theory]
@@ -70,15 +71,15 @@ public class GameTests
         ArrangeReadyToStartGame();
         _gameStatusMock.Setup(s => s.CurrentState).Returns(state);
 
-        Assert.Throws<InvalidOperationException>(() => _game.StartGame(LobbyOwnerId));
+        Assert.Throws<InvalidOperationException>(() => _game.StartGame(LobbyOwner.Id));
     }
 
     [Fact]
     public void StartGame_PlayersShouldGetCards()
     {
         ArrangeReadyToStartGame();
-        
-        _game.StartGame(LobbyOwnerId);
+
+        _game.StartGame(LobbyOwner.Id);
 
         _cardStateMock.Verify(s => s.RefillPlayerCards(It.IsAny<IReadOnlyCollection<Player>>()), Times.Once());
     }
@@ -88,7 +89,7 @@ public class GameTests
     {
         ArrangeReadyToStartGame();
 
-        _game.StartGame(LobbyOwnerId);
+        _game.StartGame(LobbyOwner.Id);
 
         _cardStateMock.Verify(s => s.DrawTemplateCard(), Times.Once());
     }
@@ -98,7 +99,7 @@ public class GameTests
     {
         ArrangeReadyToStartGame();
 
-        _game.StartGame(LobbyOwnerId);
+        _game.StartGame(LobbyOwner.Id);
 
         _gameStatusMock.Verify(s => s.CurrentState, Times.AtLeastOnce());
         _gameStatusMock.Verify(s => s.SwitchToPlaying(), Times.Once());
@@ -110,7 +111,7 @@ public class GameTests
     {
         ArrangeReadyToStartGame();
 
-        _game.StartGame(LobbyOwnerId);
+        _game.StartGame(LobbyOwner.Id);
 
         _judgePickerMock.Verify(j => j.PickNewJudge(It.IsAny<IReadOnlyCollection<Player>>()), Times.Once());
     }
@@ -123,11 +124,65 @@ public class GameTests
         Assert.Throws<InvalidOperationException>(() => _game.StartGame(Guid.NewGuid()));
     }
 
+    [Fact]
+    public void PlayCards_NoCardIds_ShouldThrow()
+    {
+        ArrangeStartedGame();
+
+        Assert.Throws<ArgumentException>(() => _game.PlayCards(LobbyOwner.Id, Array.Empty<int>()));
+    }
+
+    [Fact]
+    public void PlayCards_NotPlaying_ShouldThrow()
+    {
+        const int cardId = 1;
+        LobbyOwner.Cards.Add(new Card { Id = cardId });
+        ArrangeReadyToStartGame();
+
+        Assert.Throws<InvalidOperationException>(() => _game.PlayCards(LobbyOwner.Id, new[] { cardId }));
+    }
+
+    [Fact]
+    public void PlayCards_JudgePlay_ShouldThrow()
+    {
+        const int cardId = 1;
+        JudgePlayer.Cards.Add(new Card { Id = cardId });
+        ArrangeStartedGame();
+
+        Assert.Throws<InvalidOperationException>(() => _game.PlayCards(JudgePlayer.Id, new[] { cardId }));
+    }
+
+    [Fact]
+    public void PlayCards_UnknownCardId_ShouldThrow()
+    {
+        const int cardId = 3;
+        ArrangeStartedGame();
+
+        Assert.Throws<InvalidOperationException>(() => _game.PlayCards(LobbyOwner.Id, new[] { cardId }));
+    }
+
+    [Fact]
+    public void PlayCards_MoreCardsThanInHand_ShouldThrow()
+    {
+        const int cardId = 3;
+        LobbyOwner.Cards.Add(new Card { Id = cardId });
+        ArrangeStartedGame();
+
+        Assert.Throws<InvalidOperationException>(() => _game.PlayCards(LobbyOwner.Id, new[] { cardId, cardId }));
+    }
+
+    private void ArrangeStartedGame()
+    {
+        _gameStatusMock.Setup(s => s.CurrentState).Returns(GameState.Playing);
+        _lobbyMock.Setup(l => l.Players).Returns(new[] { LobbyOwner, JudgePlayer, new Player(Guid.NewGuid()) });
+        _judgePickerMock.Setup(j => j.CurrentJudgeId).Returns(JudgePlayer.Id);
+    }
+
     private void ArrangeReadyToStartGame()
     {
         _gameStatusMock.Setup(s => s.CurrentState).Returns(GameState.Waiting);
         _lobbyMock.Setup(l => l.HasEnoughPlayers).Returns(true);
-        _lobbyMock.Setup(l => l.OwnerId).Returns(LobbyOwnerId);
-        _lobbyMock.Setup(l => l.Players).Returns(new[] { new Player(LobbyOwnerId), new Player(Guid.NewGuid()), new Player(Guid.NewGuid()) });
+        _lobbyMock.Setup(l => l.OwnerId).Returns(LobbyOwner.Id);
+        _lobbyMock.Setup(l => l.Players).Returns(new[] { new Player(LobbyOwner.Id), JudgePlayer, new Player(Guid.NewGuid()) });
     }
 }

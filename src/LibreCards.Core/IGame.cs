@@ -1,5 +1,6 @@
 ﻿using LibreCards.Core.Entities;
 using System;
+using System.Collections.Generic;
 
 namespace LibreCards.Core
 {
@@ -11,5 +12,6 @@ namespace LibreCards.Core
         Guid JudgePlayerId { get; }
         Guid LobbyOwnerId { get; }
         GameState GameState { get; }
+        void PlayCards(Guid playerId, IEnumerable<int> cardIds);
     }
 }

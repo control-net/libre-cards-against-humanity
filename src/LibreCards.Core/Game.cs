@@ -1,5 +1,7 @@
 ﻿using LibreCards.Core.Entities;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LibreCards.Core
 {
@@ -28,12 +30,32 @@ namespace LibreCards.Core
 
         public Guid LobbyOwnerId => _lobby.OwnerId;
 
+        public void PlayCards(Guid playerId, IEnumerable<int> cardIds)
+        {
+            if (!cardIds.Any())
+                throw new ArgumentException("At least one card ID is required.", nameof(cardIds));
+
+            if (_gameStatus.CurrentState != GameState.Playing)
+                throw new InvalidOperationException("A Game must be in Play mode in order to play a card.");
+
+            if (playerId == JudgePlayerId)
+                throw new InvalidOperationException("A Judge cannot play a card.");
+
+            var player = Lobby.Players.First(p => p.Id == playerId);
+
+            if (!cardIds.All(id => player.Cards.Any(c => c.Id == id)))
+                throw new InvalidOperationException("Not all provided card IDs are in the player's hand.");
+
+            if (cardIds.GroupBy(c => c).All(g => player.Cards.Count(c => c.Id == g.Key) < g.Count()))
+                throw new InvalidOperationException("Cannot play more cards than the player has in their hand.");
+        }
+
         public void StartGame(Guid playerId)
         {
             if (_gameStatus.CurrentState != GameState.Waiting)
                 throw new InvalidOperationException("Game is already in progress.");
 
-            if(!_lobby.HasEnoughPlayers)
+            if (!_lobby.HasEnoughPlayers)
                 throw new InvalidOperationException("Not enough players.");
 
             if (playerId != LobbyOwnerId)
