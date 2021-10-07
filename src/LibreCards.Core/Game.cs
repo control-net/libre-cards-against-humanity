@@ -48,6 +48,12 @@ namespace LibreCards.Core
 
             if (cardIds.GroupBy(c => c).All(g => player.Cards.Count(c => c.Id == g.Key) < g.Count()))
                 throw new InvalidOperationException("Cannot play more cards than the player has in their hand.");
+
+            if (TemplateCard.BlankCount != cardIds.Count())
+                throw new InvalidOperationException($"The current template card requires {TemplateCard.BlankCount} cards.");
+
+            foreach(var card in cardIds.Select(id => player.Cards.First(c => c.Id == id)))
+                player.Cards.Remove(card);
         }
 
         public void StartGame(Guid playerId)

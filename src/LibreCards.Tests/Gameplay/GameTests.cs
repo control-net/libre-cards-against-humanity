@@ -171,6 +171,58 @@ public class GameTests
         Assert.Throws<InvalidOperationException>(() => _game.PlayCards(LobbyOwner.Id, new[] { cardId, cardId }));
     }
 
+    [Fact]
+    public void PlayCards_MoreCardsThanInTemplate_ShouldThrow()
+    {
+        LobbyOwner.Cards.Add(new Card { Id = 1 });
+        LobbyOwner.Cards.Add(new Card { Id = 2 });
+        LobbyOwner.Cards.Add(new Card { Id = 3 });
+        _cardStateMock.Setup(c => c.CurrentTemplateCard).Returns(new Template("<BLANK> + <BLANK>"));
+        ArrangeStartedGame();
+
+        Assert.Throws<InvalidOperationException>(() => _game.PlayCards(LobbyOwner.Id, new[] { 1, 2, 3 }));
+    }
+
+    [Fact]
+    public void PlayCards_LessCardsThanInTemplate_ShouldThrow()
+    {
+        LobbyOwner.Cards.Add(new Card { Id = 1 });
+        _cardStateMock.Setup(c => c.CurrentTemplateCard).Returns(new Template("<BLANK> + <BLANK>"));
+        ArrangeStartedGame();
+
+        Assert.Throws<InvalidOperationException>(() => _game.PlayCards(LobbyOwner.Id, new[] { 1 }));
+    }
+
+    [Fact]
+    public void PlayCards_CorrectCards_ShouldRemoveCards()
+    {
+        LobbyOwner.Cards.Add(new Card { Id = 1 });
+        LobbyOwner.Cards.Add(new Card { Id = 2 });
+        LobbyOwner.Cards.Add(new Card { Id = 3 });
+        _cardStateMock.Setup(c => c.CurrentTemplateCard).Returns(new Template("<BLANK> + <BLANK>"));
+        ArrangeStartedGame();
+
+        _game.PlayCards(LobbyOwner.Id, new[] { 1, 2 });
+
+        Assert.Single(LobbyOwner.Cards);
+        Assert.Equal(3, LobbyOwner.Cards.First().Id);
+    }
+
+    [Fact]
+    public void PlayCards_CorrectCards_ShouldNotRemoveDuplicates()
+    {
+        LobbyOwner.Cards.Add(new Card { Id = 2 });
+        LobbyOwner.Cards.Add(new Card { Id = 2 });
+        LobbyOwner.Cards.Add(new Card { Id = 2 });
+        _cardStateMock.Setup(c => c.CurrentTemplateCard).Returns(new Template("<BLANK> + <BLANK>"));
+        ArrangeStartedGame();
+
+        _game.PlayCards(LobbyOwner.Id, new[] { 2, 2 });
+
+        Assert.Single(LobbyOwner.Cards);
+        Assert.Equal(2, LobbyOwner.Cards.First().Id);
+    }
+
     private void ArrangeStartedGame()
     {
         _gameStatusMock.Setup(s => s.CurrentState).Returns(GameState.Playing);
