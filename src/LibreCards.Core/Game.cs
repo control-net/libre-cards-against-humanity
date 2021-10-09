@@ -52,8 +52,17 @@ namespace LibreCards.Core
             if (TemplateCard.BlankCount != cardIds.Count())
                 throw new InvalidOperationException($"The current template card requires {TemplateCard.BlankCount} cards.");
 
-            foreach(var card in cardIds.Select(id => player.Cards.First(c => c.Id == id)))
+            var playedCards = cardIds.Select(id => player.Cards.First(c => c.Id == id));
+            foreach (var card in playedCards)
                 player.Cards.Remove(card);
+
+            _cardState.AddPlayerResponse(playerId, playedCards);
+
+            if (_cardState.GetVotingCompleted(Lobby.Players))
+            {
+                _gameStatus.SwitchToJudging();
+                _cardState.ClearResponses();
+            }
         }
 
         public void StartGame(Guid playerId)

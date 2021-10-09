@@ -120,4 +120,58 @@ public class CardStateTests
         Assert.Throws<InvalidOperationException>(() => _cardState.AddPlayerResponse(playerId, cards));
         Assert.Single(_cardState.PlayerResponses);
     }
+
+    [Fact]
+    public void GetVotingCompleted_NoResponses_ShouldReturnFalse()
+    {
+        Assert.False(_cardState.GetVotingCompleted(Array.Empty<Player>()));
+    }
+
+    [Fact]
+    public void GetVotingCompleted_NotEnoughResponses_ShouldReturnFalse()
+    {
+        var players = new[]
+        {
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid())
+        };
+
+        _cardState.AddPlayerResponse(players[0].Id, Array.Empty<Card>());
+
+        Assert.False(_cardState.GetVotingCompleted(players));
+    }
+
+    [Fact]
+    public void GetVotingCompleted_EnoughResponses_ShouldReturnTrue()
+    {
+        var players = new[]
+        {
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid())
+        };
+
+        _cardState.AddPlayerResponse(players[0].Id, Array.Empty<Card>());
+        _cardState.AddPlayerResponse(players[1].Id, Array.Empty<Card>());
+
+        Assert.True(_cardState.GetVotingCompleted(players));
+    }
+
+    [Fact]
+    public void ClearResponses_ShouldClearVotes()
+    {
+        var players = new[]
+{
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid())
+        };
+
+        _cardState.AddPlayerResponse(players[0].Id, Array.Empty<Card>());
+        _cardState.AddPlayerResponse(players[1].Id, Array.Empty<Card>());
+
+        _cardState.ClearResponses();
+        Assert.False(_cardState.GetVotingCompleted(players));
+    }
 }

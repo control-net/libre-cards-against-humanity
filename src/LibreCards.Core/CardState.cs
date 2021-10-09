@@ -10,7 +10,7 @@ namespace LibreCards.Core
     {
         private readonly ICardRepository _cardRepository;
 
-        private Dictionary<Guid, IEnumerable<Card>> _responses;
+        private readonly Dictionary<Guid, IEnumerable<Card>> _responses;
 
         public CardState(ICardRepository cardRepository)
         {
@@ -39,10 +39,14 @@ namespace LibreCards.Core
             _responses.Add(playerId, cards);
         }
 
+        public void ClearResponses() => _responses.Clear();
+
         public void DrawTemplateCard()
         {
             CurrentTemplateCard = _cardRepository.DrawTemplate();
         }
+
+        public bool GetVotingCompleted(IReadOnlyCollection<Player> players) => _responses.Count == players.Count - 1;
 
         public void RefillPlayerCards(IReadOnlyCollection<Player> players)
         {

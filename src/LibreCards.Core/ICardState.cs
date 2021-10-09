@@ -11,5 +11,7 @@ namespace LibreCards.Core
         void DrawTemplateCard();
         void RefillPlayerCards(IReadOnlyCollection<Player> players);
         void AddPlayerResponse(Guid playerId, IEnumerable<Card> cards);
+        bool GetVotingCompleted(IReadOnlyCollection<Player> players);
+        void ClearResponses();
     }
 }

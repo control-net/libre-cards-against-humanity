@@ -223,6 +223,36 @@ public class GameTests
         Assert.Equal(2, LobbyOwner.Cards.First().Id);
     }
 
+    [Fact]
+    public void PlayCards_CorrectCards_ShouldCallCardState()
+    {
+        LobbyOwner.Cards.Add(new Card { Id = 2 });
+        LobbyOwner.Cards.Add(new Card { Id = 2 });
+        LobbyOwner.Cards.Add(new Card { Id = 2 });
+        _cardStateMock.Setup(c => c.CurrentTemplateCard).Returns(new Template("<BLANK> + <BLANK>"));
+        ArrangeStartedGame();
+
+        _game.PlayCards(LobbyOwner.Id, new[] { 2, 2 });
+
+        _cardStateMock.Verify(c => c.AddPlayerResponse(LobbyOwner.Id, It.IsAny<IEnumerable<Card>>()), Times.Once());
+    }
+
+    [Fact]
+    public void PlayCards_CorrectCards_FinalVote_ShouldChangeGameState()
+    {
+        _cardStateMock.Setup(c => c.GetVotingCompleted(It.IsAny<IReadOnlyCollection<Player>>())).Returns(true);
+        LobbyOwner.Cards.Add(new Card { Id = 2 });
+        LobbyOwner.Cards.Add(new Card { Id = 2 });
+        LobbyOwner.Cards.Add(new Card { Id = 2 });
+        _cardStateMock.Setup(c => c.CurrentTemplateCard).Returns(new Template("<BLANK> + <BLANK>"));
+        ArrangeStartedGame();
+
+        _game.PlayCards(LobbyOwner.Id, new[] { 2, 2 });
+
+        _gameStatusMock.Verify(s => s.SwitchToJudging(), Times.Once());
+        _cardStateMock.Verify(c => c.ClearResponses(), Times.Once());
+    }
+
     private void ArrangeStartedGame()
     {
         _gameStatusMock.Setup(s => s.CurrentState).Returns(GameState.Playing);
