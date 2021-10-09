@@ -8,6 +8,8 @@ else
 {
     <ErrorView ErrorMessage="@_errMessage" />
 
+    <pre>@_state.Game.LocalPlayerState.ToString()</pre>
+
     @if (_state.Game.LocalPlayerState != PlayerState.NotInLobby)
     {
         <p>Your ID: @_state.Game.LocalPlayerId</p>
@@ -36,14 +38,7 @@ else
             <span>@_state.Game.Template.Text</span>
         </div>
 
-        <div class="card-drawer">
-            @foreach (var card in _state.Game.Cards ?? new CardModel[0])
-            {
-                <div class="card card-hand">
-                    <span>@card.Text</span>
-                </div>
-            }
-        </div>
+        <CardDrawer GameState="@_state" HubConnection="@_hubConnection" />
     }
 }
 

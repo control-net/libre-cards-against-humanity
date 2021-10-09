@@ -1,0 +1,14 @@
+﻿@if(GameState is not null)
+{
+    <div class="card-drawer">
+        @foreach (var card in GameState.Game.Cards)
+        {
+            <div class="card card-hand">
+                <span>@card.Text</span>
+                <input type="checkbox" @onchange="args=>ToggleCardSelection(args, card.Id)" />
+            </div>
+        }
+
+        <button @onclick="async () => await SubmitCardsAsync()">Submit</button>
+    </div>
+}

@@ -4,6 +4,7 @@
     {
         NotInLobby,
         InLobby,
-        Playing
+        Playing,
+        Judging
     }
 }
