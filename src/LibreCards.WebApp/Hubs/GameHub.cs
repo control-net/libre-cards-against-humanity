@@ -82,7 +82,10 @@ public class GameHub : Hub
         if (_game.GameState == GameState.Waiting)
             return PlayerState.InLobby;
 
-        return PlayerState.Playing;
+        if (_game.GameState == GameState.Playing)
+            return PlayerState.Playing;
+
+        return PlayerState.Judging;
     }
 
     public async Task Leave(Guid id)
@@ -115,6 +118,13 @@ public class GameHub : Hub
     {
         var id = _connections.GetByConnectionId(Context.ConnectionId).Id;
         await ExecuteSafelyAsync(() => _game.StartGame(id));
+        await SendUpdatedGameModelAsync();
+    }
+
+    public async Task PlayCards(int[] cardIds)
+    {
+        var id = _connections.GetByConnectionId(Context.ConnectionId).Id;
+        await ExecuteSafelyAsync(() => _game.PlayCards(id, cardIds));
         await SendUpdatedGameModelAsync();
     }
 

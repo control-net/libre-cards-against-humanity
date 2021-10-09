@@ -81,4 +81,97 @@ public class CardStateTests
 
         Assert.Equal(8, player.Cards.Count);
     }
+
+    [Fact]
+    public void PlayerResponses_ShouldStartEmpty()
+    {
+        Assert.Empty(_cardState.PlayerResponses);
+    }
+
+    [Fact]
+    public void AddPlayerResponse_ShouldAdd()
+    {
+        var playerId = Guid.NewGuid();
+        var cards = new[]
+        {
+            new Card { Id = 1 },
+            new Card { Id = 2 }
+        };
+
+        _cardState.AddPlayerResponse(playerId, cards);
+
+        Assert.Single(_cardState.PlayerResponses);
+        Assert.Equal(0, _cardState.PlayerResponses.First().Id);
+        Assert.Equal(1, _cardState.PlayerResponses.First().Cards.ElementAt(0).Id);
+        Assert.Equal(2, _cardState.PlayerResponses.First().Cards.ElementAt(1).Id);
+    }
+
+    [Fact]
+    public void AddPlayerResponse_AddTwice_ShouldThrow()
+    {
+        var playerId = Guid.NewGuid();
+        var cards = new[]
+        {
+            new Card { Id = 1 },
+            new Card { Id = 2 }
+        };
+
+        _cardState.AddPlayerResponse(playerId, cards);
+        Assert.Throws<InvalidOperationException>(() => _cardState.AddPlayerResponse(playerId, cards));
+        Assert.Single(_cardState.PlayerResponses);
+    }
+
+    [Fact]
+    public void GetVotingCompleted_NoResponses_ShouldReturnFalse()
+    {
+        Assert.False(_cardState.GetVotingCompleted(Array.Empty<Player>()));
+    }
+
+    [Fact]
+    public void GetVotingCompleted_NotEnoughResponses_ShouldReturnFalse()
+    {
+        var players = new[]
+        {
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid())
+        };
+
+        _cardState.AddPlayerResponse(players[0].Id, Array.Empty<Card>());
+
+        Assert.False(_cardState.GetVotingCompleted(players));
+    }
+
+    [Fact]
+    public void GetVotingCompleted_EnoughResponses_ShouldReturnTrue()
+    {
+        var players = new[]
+        {
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid())
+        };
+
+        _cardState.AddPlayerResponse(players[0].Id, Array.Empty<Card>());
+        _cardState.AddPlayerResponse(players[1].Id, Array.Empty<Card>());
+
+        Assert.True(_cardState.GetVotingCompleted(players));
+    }
+
+    [Fact]
+    public void ClearResponses_ShouldClearVotes()
+    {
+        var players = new[]
+{
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid())
+        };
+
+        _cardState.AddPlayerResponse(players[0].Id, Array.Empty<Card>());
+        _cardState.AddPlayerResponse(players[1].Id, Array.Empty<Card>());
+
+        _cardState.ClearResponses();
+        Assert.False(_cardState.GetVotingCompleted(players));
+    }
 }
