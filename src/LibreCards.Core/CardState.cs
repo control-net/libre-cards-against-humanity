@@ -20,7 +20,7 @@ namespace LibreCards.Core
 
         public Template CurrentTemplateCard { get; private set; }
 
-        public IEnumerable<Response> PlayerResponses => _responses.Select(ToResponse);
+        public IEnumerable<Response> PlayerResponses => _responses.Select(ToResponse).ToList();
 
         private static Response ToResponse(KeyValuePair<Guid, IEnumerable<Card>> source, int index)
         {
@@ -36,7 +36,7 @@ namespace LibreCards.Core
             if (_responses.ContainsKey(playerId))
                 throw new InvalidOperationException("A player with this ID already responded.");
 
-            _responses.Add(playerId, cards);
+            _responses.Add(playerId, cards.ToList());
         }
 
         public void ClearResponses() => _responses.Clear();
@@ -46,7 +46,12 @@ namespace LibreCards.Core
             CurrentTemplateCard = _cardRepository.DrawTemplate();
         }
 
-        public bool GetVotingCompleted(IReadOnlyCollection<Player> players) => _responses.Count == players.Count - 1;
+        public bool GetPlayerVoted(Guid id) => _responses.ContainsKey(id);
+
+        public bool GetVotingCompleted(IReadOnlyCollection<Player> players)
+        {
+            return _responses.Count == players.Count - 1;
+        }
 
         public Guid PickBestResponse(int id)
         {

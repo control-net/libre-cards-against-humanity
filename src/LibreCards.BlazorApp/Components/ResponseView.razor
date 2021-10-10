@@ -1,0 +1,21 @@
+﻿@if (GameState is not null)
+{
+    <p>ResponseViewComponent</p>
+    <p>There are @GameState.Game.Responses.Count() responses</p>
+    foreach (var response in GameState.Game.Responses)
+    {
+        <div class="card-response-group">
+            @foreach (var text in response.CardTexts)
+            {
+                <div class="card card-response">
+                    <span>@text</span>
+                </div>
+            }
+
+            @if (GameState.Game.LocalPlayerIsJudge)
+            {
+                <button @onclick="async () => await SubmitWinnerAsync(response.Id)">🏆 Pick as Winner</button>
+            }
+        </div>
+    }
+}

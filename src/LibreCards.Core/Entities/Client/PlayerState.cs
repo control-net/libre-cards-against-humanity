@@ -5,6 +5,7 @@
         NotInLobby,
         InLobby,
         Playing,
+        PlayedCard,
         Judging
     }
 }

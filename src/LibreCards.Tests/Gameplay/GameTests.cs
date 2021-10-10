@@ -250,7 +250,6 @@ public class GameTests
         _game.PlayCards(LobbyOwner.Id, new[] { 2, 2 });
 
         _gameStatusMock.Verify(s => s.SwitchToJudging(), Times.Once());
-        _cardStateMock.Verify(c => c.ClearResponses(), Times.Once());
     }
 
     [Fact]

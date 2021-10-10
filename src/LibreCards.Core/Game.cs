@@ -32,6 +32,8 @@ namespace LibreCards.Core
 
         public IEnumerable<Response> PlayerResponses => _cardState.PlayerResponses;
 
+        public bool GetPlayerVoted(Guid id) => _cardState.GetPlayerVoted(id);
+
         public void JudgeCard(Guid playerId, int responseId)
         {
             if (_gameStatus.CurrentState != GameState.Judging)
@@ -45,6 +47,7 @@ namespace LibreCards.Core
 
             winner.Points++;
             _gameStatus.SwitchToPlaying();
+            _cardState.ClearResponses();
             SetupNewRound();
         }
 
@@ -70,7 +73,7 @@ namespace LibreCards.Core
             if (TemplateCard.BlankCount != cardIds.Count())
                 throw new InvalidOperationException($"The current template card requires {TemplateCard.BlankCount} cards.");
 
-            var playedCards = cardIds.Select(id => player.Cards.First(c => c.Id == id));
+            var playedCards = cardIds.Select(id => player.Cards.First(c => c.Id == id)).ToList();
             foreach (var card in playedCards)
                 player.Cards.Remove(card);
 
@@ -79,7 +82,6 @@ namespace LibreCards.Core
             if (_cardState.GetVotingCompleted(Lobby.Players))
             {
                 _gameStatus.SwitchToJudging();
-                _cardState.ClearResponses();
             }
         }
 

@@ -1,24 +1,35 @@
-﻿<h3>PlayersView</h3>
+﻿@if (GameState is not null)
+{
+    <h3>PlayersView</h3>
 
-<p><b>Players</b></p>
+    <p><b>Players</b></p>
 
-<table>
-    <tr>
-        <th></th>
-        <th>Username</th>
-        <th>ID</th>
-    </tr>
-    @foreach (var player in Players)
-    {
+    <table>
         <tr>
-            <td>
-                @if(player.Id == LocalPlayerId)
-                {
-                    <b>YOU</b>
-                }
-            </td>
-            <td>@player.Username</td>
-            <td>@player.Id</td>
+            <th></th>
+            <th>Username</th>
+            <th>ID</th>
+            <th>Points</th>
         </tr>
-    }
-</table>
+        @foreach (var player in GameState.Game.Players)
+        {
+            <tr>
+                <td>
+
+                    @if (player.Id == GameState.Game.LocalPlayerId)
+                    {
+                        <b>🏠 </b>
+                    }
+
+                    @if (player.Id == GameState.Game.JudgeId)
+                    {
+                        <b>👩‍⚖️ CARD JUDGE</b>
+                    }
+                </td>
+                <td>@player.Username</td>
+                <td>@player.Id</td>
+                <td>@player.Points</td>
+            </tr>
+        }
+    </table>
+}
