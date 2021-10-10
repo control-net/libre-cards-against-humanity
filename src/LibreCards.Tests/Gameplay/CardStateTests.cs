@@ -162,7 +162,7 @@ public class CardStateTests
     public void ClearResponses_ShouldClearVotes()
     {
         var players = new[]
-{
+        {
             new Player(Guid.NewGuid()),
             new Player(Guid.NewGuid()),
             new Player(Guid.NewGuid())
@@ -173,5 +173,41 @@ public class CardStateTests
 
         _cardState.ClearResponses();
         Assert.False(_cardState.GetVotingCompleted(players));
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(2)]
+    public void PickBestResponse_InvalidId_ShouldThrow(int id)
+    {
+        var players = new[]
+        {
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid())
+        };
+
+        _cardState.AddPlayerResponse(players[0].Id, Array.Empty<Card>());
+        _cardState.AddPlayerResponse(players[1].Id, Array.Empty<Card>());
+
+        Assert.Throws<IndexOutOfRangeException>(() => _cardState.PickBestResponse(id));
+    }
+
+    [Fact]
+    public void PickBestResponse_ShouldReturnTheCorrectPlayer()
+    {
+        var players = new[]
+{
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid()),
+            new Player(Guid.NewGuid())
+        };
+
+        _cardState.AddPlayerResponse(players[0].Id, Array.Empty<Card>());
+        _cardState.AddPlayerResponse(players[1].Id, Array.Empty<Card>());
+
+        var actual = _cardState.PickBestResponse(1);
+
+        Assert.Equal(players[1].Id, actual);
     }
 }

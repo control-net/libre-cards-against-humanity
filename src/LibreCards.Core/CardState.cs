@@ -48,6 +48,14 @@ namespace LibreCards.Core
 
         public bool GetVotingCompleted(IReadOnlyCollection<Player> players) => _responses.Count == players.Count - 1;
 
+        public Guid PickBestResponse(int id)
+        {
+            if (id < 0 || id >= _responses.Count)
+                throw new IndexOutOfRangeException("The best response index was out of range.");
+
+            return _responses.ElementAt(id).Key;
+        }
+
         public void RefillPlayerCards(IReadOnlyCollection<Player> players)
         {
             if (players is null)

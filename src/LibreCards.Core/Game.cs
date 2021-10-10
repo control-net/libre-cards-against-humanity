@@ -30,6 +30,24 @@ namespace LibreCards.Core
 
         public Guid LobbyOwnerId => _lobby.OwnerId;
 
+        public IEnumerable<Response> PlayerResponses => _cardState.PlayerResponses;
+
+        public void JudgeCard(Guid playerId, int responseId)
+        {
+            if (_gameStatus.CurrentState != GameState.Judging)
+                throw new InvalidOperationException("Card judging is only allowed during the Judging stage.");
+
+            if (playerId != JudgePlayerId)
+                throw new InvalidOperationException("Only the Judge player can judge cards.");
+
+            var winnerId = _cardState.PickBestResponse(responseId);
+            var winner = _lobby.Players.First(p => p.Id == winnerId);
+
+            winner.Points++;
+            _gameStatus.SwitchToPlaying();
+            SetupNewRound();
+        }
+
         public void PlayCards(Guid playerId, IEnumerable<int> cardIds)
         {
             if (!cardIds.Any())
