@@ -24,7 +24,7 @@ else
     }
     else
     {
-        <PlayersView Players="@_state.Game.Players" LocalPlayerId="@_state.Game.LocalPlayerId" />
+        <PlayersView GameState="@_state" />
     }
 
     @if (_state.Game.LocalPlayerState == PlayerState.InLobby)
@@ -32,13 +32,34 @@ else
         <button @onclick="async () => await StartGameAsync()">Start Game</button>
     }
 
-    @if (_state.Game.LocalPlayerState == PlayerState.Playing)
+    @if (_state.Game.LocalPlayerState == PlayerState.Playing || _state.Game.LocalPlayerState == PlayerState.Judging || _state.Game.LocalPlayerState == PlayerState.PlayedCard)
     {
         <div class="card card-template">
             <span>@_state.Game.Template.Text</span>
         </div>
+    }
 
-        <CardDrawer GameState="@_state" HubConnection="@_hubConnection" />
+    @if (_state.Game.LocalPlayerIsJudge)
+    {
+        <p>You are the card Judge. Wait for other players to play their cards.</p>
+    }
+    else
+    {
+        @if (_state.Game.LocalPlayerState == PlayerState.Playing)
+        {
+            <CardDrawer GameState="@_state" HubConnection="@_hubConnection" />
+        }
+
+        @if (_state.Game.LocalPlayerState == PlayerState.PlayedCard)
+        {
+            <p>Please wait for others to play their cards...</p>
+        }
+    }
+
+    @if (_state.Game.LocalPlayerState == PlayerState.Judging)
+    {
+
+        <ResponseView GameState="@_state" HubConnection="@_hubConnection" />
     }
 }
 

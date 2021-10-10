@@ -13,5 +13,7 @@ namespace LibreCards.Core
         void AddPlayerResponse(Guid playerId, IEnumerable<Card> cards);
         bool GetVotingCompleted(IReadOnlyCollection<Player> players);
         void ClearResponses();
+        Guid PickBestResponse(int id);
+        bool GetPlayerVoted(Guid id);
     }
 }

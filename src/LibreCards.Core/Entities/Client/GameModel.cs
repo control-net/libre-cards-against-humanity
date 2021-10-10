@@ -17,6 +17,8 @@ namespace LibreCards.Core.Entities.Client
 
         public TemplateModel Template { get; set; }
 
+        public IEnumerable<ResponseModel> Responses { get; set; } = new List<ResponseModel>();
+
         public bool LocalPlayerIsJudge => LocalPlayerId == JudgeId;
     }
 }

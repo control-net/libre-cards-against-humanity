@@ -250,7 +250,36 @@ public class GameTests
         _game.PlayCards(LobbyOwner.Id, new[] { 2, 2 });
 
         _gameStatusMock.Verify(s => s.SwitchToJudging(), Times.Once());
-        _cardStateMock.Verify(c => c.ClearResponses(), Times.Once());
+    }
+
+    [Fact]
+    public void JudgeCard_NotJudging_ShouldThrow()
+    {
+        ArrangeJudgingGame();
+        _gameStatusMock.Setup(s => s.CurrentState).Returns(GameState.Playing);
+
+        Assert.Throws<InvalidOperationException>(() => _game.JudgeCard(JudgePlayer.Id, 1));
+    }
+
+    [Fact]
+    public void JudgeCard_NotJudge_ShouldThrow()
+    {
+        ArrangeJudgingGame();
+
+        Assert.Throws<InvalidOperationException>(() => _game.JudgeCard(LobbyOwner.Id, 1));
+    }
+
+    [Fact]
+    public void JudgeCard_ShouldAssignPointsCorrectlyAndSwitchGameMode()
+    {
+        ArrangeJudgingGame();
+
+        _cardStateMock.Setup(c => c.PickBestResponse(1)).Returns(LobbyOwner.Id);
+
+        _game.JudgeCard(JudgePlayer.Id, 1);
+
+        Assert.Equal(1, LobbyOwner.Points);
+        _gameStatusMock.Verify(g => g.SwitchToPlaying(), Times.Once());
     }
 
     private void ArrangeStartedGame()
@@ -265,6 +294,15 @@ public class GameTests
         _gameStatusMock.Setup(s => s.CurrentState).Returns(GameState.Waiting);
         _lobbyMock.Setup(l => l.HasEnoughPlayers).Returns(true);
         _lobbyMock.Setup(l => l.OwnerId).Returns(LobbyOwner.Id);
-        _lobbyMock.Setup(l => l.Players).Returns(new[] { new Player(LobbyOwner.Id), JudgePlayer, new Player(Guid.NewGuid()) });
+        _lobbyMock.Setup(l => l.Players).Returns(new[] { LobbyOwner, JudgePlayer, new Player(Guid.NewGuid()) });
+    }
+
+    private void ArrangeJudgingGame()
+    {
+        _gameStatusMock.Setup(s => s.CurrentState).Returns(GameState.Judging);
+        _lobbyMock.Setup(l => l.HasEnoughPlayers).Returns(true);
+        _lobbyMock.Setup(l => l.OwnerId).Returns(LobbyOwner.Id);
+        _judgePickerMock.Setup(j => j.CurrentJudgeId).Returns(JudgePlayer.Id);
+        _lobbyMock.Setup(l => l.Players).Returns(new[] { LobbyOwner, JudgePlayer, new Player(Guid.NewGuid()) });
     }
 }

@@ -30,6 +30,18 @@
     padding-top: 30px;
 }
 
+.card-response {
+    margin: 10px;
+    text-align: center;
+    padding-top: 30px;
+}
+
+.card-response-group {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 20px;
+}
+
 a, .btn-link {
     color: #0077cc;
 }

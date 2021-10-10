@@ -13,5 +13,8 @@ namespace LibreCards.Core
         Guid LobbyOwnerId { get; }
         GameState GameState { get; }
         void PlayCards(Guid playerId, IEnumerable<int> cardIds);
+        void JudgeCard(Guid playerId, int responseId);
+        IEnumerable<Response> PlayerResponses { get; }
+        bool GetPlayerVoted(Guid id);
     }
 }

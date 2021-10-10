@@ -65,25 +65,28 @@ public class GameHub : Hub
 
             var gameModel = new GameModel
             {
-                LocalPlayerState = GetPlayerState(),
+                LocalPlayerState = GetPlayerState(gameUser),
                 Cards = gameUser.Cards.Select(CardModel.FromEntity),
                 JudgeId = _game.JudgePlayerId,
                 LocalPlayerId = gameUser.Id,
                 Template = TemplateModel.FromEntity(_game.TemplateCard),
-                Players = _game.Lobby.Players.Select(PlayerModel.FromEntity)
+                Players = _game.Lobby.Players.Select(PlayerModel.FromEntity),
+                Responses = _game.PlayerResponses.Select(ResponseModel.FromEntity)
             };
 
             await Clients.Client(user.Key).SendAsync("GameUpdated", gameModel);
         }
     }
 
-    private PlayerState GetPlayerState()
+    private PlayerState GetPlayerState(Player p)
     {
         if (_game.GameState == GameState.Waiting)
             return PlayerState.InLobby;
 
         if (_game.GameState == GameState.Playing)
-            return PlayerState.Playing;
+        {
+            return _game.GetPlayerVoted(p.Id) ? PlayerState.PlayedCard : PlayerState.Playing;
+        }
 
         return PlayerState.Judging;
     }
@@ -125,6 +128,13 @@ public class GameHub : Hub
     {
         var id = _connections.GetByConnectionId(Context.ConnectionId).Id;
         await ExecuteSafelyAsync(() => _game.PlayCards(id, cardIds));
+        await SendUpdatedGameModelAsync();
+    }
+
+    public async Task PickResponse(int responseId)
+    {
+        var id = _connections.GetByConnectionId(Context.ConnectionId).Id;
+        await ExecuteSafelyAsync(() => _game.JudgeCard(id, responseId));
         await SendUpdatedGameModelAsync();
     }
 

@@ -30,6 +30,27 @@ namespace LibreCards.Core
 
         public Guid LobbyOwnerId => _lobby.OwnerId;
 
+        public IEnumerable<Response> PlayerResponses => _cardState.PlayerResponses;
+
+        public bool GetPlayerVoted(Guid id) => _cardState.GetPlayerVoted(id);
+
+        public void JudgeCard(Guid playerId, int responseId)
+        {
+            if (_gameStatus.CurrentState != GameState.Judging)
+                throw new InvalidOperationException("Card judging is only allowed during the Judging stage.");
+
+            if (playerId != JudgePlayerId)
+                throw new InvalidOperationException("Only the Judge player can judge cards.");
+
+            var winnerId = _cardState.PickBestResponse(responseId);
+            var winner = _lobby.Players.First(p => p.Id == winnerId);
+
+            winner.Points++;
+            _gameStatus.SwitchToPlaying();
+            _cardState.ClearResponses();
+            SetupNewRound();
+        }
+
         public void PlayCards(Guid playerId, IEnumerable<int> cardIds)
         {
             if (!cardIds.Any())
@@ -52,7 +73,7 @@ namespace LibreCards.Core
             if (TemplateCard.BlankCount != cardIds.Count())
                 throw new InvalidOperationException($"The current template card requires {TemplateCard.BlankCount} cards.");
 
-            var playedCards = cardIds.Select(id => player.Cards.First(c => c.Id == id));
+            var playedCards = cardIds.Select(id => player.Cards.First(c => c.Id == id)).ToList();
             foreach (var card in playedCards)
                 player.Cards.Remove(card);
 
@@ -61,7 +82,6 @@ namespace LibreCards.Core
             if (_cardState.GetVotingCompleted(Lobby.Players))
             {
                 _gameStatus.SwitchToJudging();
-                _cardState.ClearResponses();
             }
         }
 

@@ -4,16 +4,19 @@ namespace LibreCards.Core.Entities.Client
 {
     public class PlayerModel
     {
-        public Guid Id {  get; set; }
+        public Guid Id { get; set; }
 
         public string Username { get; set; }
+
+        public int Points { get; set; }
 
         public static PlayerModel FromEntity(Player player)
         {
             return new PlayerModel
             {
                 Id = player.Id,
-                Username = player.Username
+                Username = player.Username,
+                Points = player.Points
             };
         }
     }
