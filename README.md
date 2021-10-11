@@ -25,7 +25,7 @@ Free and Open Source implementation of Cards against humanity using Signal R.
 
 ## How to contribute
 
-♥ If you'd like to contribute, please see the [Contributing Document](CONTRIBUTING.md) to see how to get started.
+♥ If you'd like to contribute, please see the [Contributing Document](docs/CONTRIBUTING.md) to see how to get started.
 
 ## Building the project
 
