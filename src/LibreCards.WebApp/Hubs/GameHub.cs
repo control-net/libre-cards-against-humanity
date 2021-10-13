@@ -66,7 +66,7 @@ public class GameHub : Hub
             var gameModel = new GameModel
             {
                 LocalPlayerState = GetPlayerState(gameUser),
-                Cards = gameUser.Cards.Select(CardModel.FromEntity),
+                Cards = gameUser.Cards.Select((c, i) => CardModel.FromEntity(c, i)),
                 JudgeId = _game.JudgePlayerId,
                 LocalPlayerId = gameUser.Id,
                 Template = TemplateModel.FromEntity(_game.TemplateCard),

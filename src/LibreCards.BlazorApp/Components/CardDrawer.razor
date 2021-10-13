@@ -6,9 +6,9 @@
         @foreach (var card in GameState.Game.Cards)
         {
             <div class="card card-hand">
-                <input id="@card.Id" type="checkbox" @onchange="args=>ToggleCardSelection(args, card.Id)" />
-                <label for="@card.Id"></label>
-                <span class="card-content">@card.Text</span>
+                <input id="@card.UniqueId" type="checkbox" @onchange="args=>ToggleCardSelection(args, card.Id)" />
+                <label for="@card.UniqueId"></label>
+                <span class="card-content">@card.Text (@card.UniqueId)</span>
                 <span class="card-selected">Selected</span>
             </div>
         }
