@@ -1,8 +1,10 @@
-﻿using LibreCards.Core.Entities;
+﻿
+using LibreCards.Core.Entities;
 using LibreCards.Core.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace LibreCards.Core
 {
@@ -30,6 +32,8 @@ namespace LibreCards.Core
                 Id = index
             };
         }
+
+        public Task AddFromUrl(string url) => _cardRepository.AddFromUrl(url);
 
         public void AddPlayerResponse(Guid playerId, IEnumerable<Card> cards)
         {

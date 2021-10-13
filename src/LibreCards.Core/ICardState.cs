@@ -1,6 +1,7 @@
 ﻿using LibreCards.Core.Entities;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LibreCards.Core
 {
@@ -15,5 +16,6 @@ namespace LibreCards.Core
         void ClearResponses();
         Guid PickBestResponse(int id);
         bool GetPlayerVoted(Guid id);
+        Task AddFromUrl(string url);
     }
 }

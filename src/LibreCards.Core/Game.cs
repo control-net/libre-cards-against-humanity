@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace LibreCards.Core
 {
@@ -33,6 +34,8 @@ namespace LibreCards.Core
         public IEnumerable<Response> PlayerResponses => _cardState.PlayerResponses;
 
         public bool GetPlayerVoted(Guid id) => _cardState.GetPlayerVoted(id);
+
+        public Task ImportCardSetFromUrl(string url) => _cardState.AddFromUrl(url);
 
         public void JudgeCard(Guid playerId, int responseId)
         {

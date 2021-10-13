@@ -1,6 +1,7 @@
 ﻿using LibreCards.Core.Entities;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LibreCards.Core
 {
@@ -16,5 +17,6 @@ namespace LibreCards.Core
         void JudgeCard(Guid playerId, int responseId);
         IEnumerable<Response> PlayerResponses { get; }
         bool GetPlayerVoted(Guid id);
+        Task ImportCardSetFromUrl(string url);
     }
 }

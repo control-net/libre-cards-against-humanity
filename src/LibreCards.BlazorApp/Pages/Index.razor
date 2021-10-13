@@ -58,7 +58,6 @@ else
 
     @if (_state.Game.LocalPlayerState == PlayerState.Judging)
     {
-
         <ResponseView GameState="@_state" HubConnection="@_hubConnection" />
     }
 }
@@ -66,3 +65,5 @@ else
 <pre>
     Status: @_statusMessage
 </pre>
+<input type="text" @bind-value="_customUrl" />
+<button @onclick="async () => await AddCards()">add cards</button>

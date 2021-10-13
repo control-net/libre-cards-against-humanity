@@ -91,6 +91,11 @@ public class GameHub : Hub
         return PlayerState.Judging;
     }
 
+    public async Task ImportCards(string url)
+    {
+        await ExecuteSafelyAsync(async () => await _game.ImportCardSetFromUrl(url));
+    }
+
     public async Task Leave(Guid id)
     {
         if (!_connections.ConnectionExists(Context.ConnectionId))

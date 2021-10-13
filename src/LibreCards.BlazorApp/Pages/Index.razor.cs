@@ -14,6 +14,8 @@ public partial class Index : IAsyncDisposable
 
     private string? _errMessage;
 
+    private string _customUrl = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         _hubConnection = new HubConnectionBuilder()
@@ -48,5 +50,10 @@ public partial class Index : IAsyncDisposable
         {
             await _hubConnection.DisposeAsync();
         }
+    }
+
+    private async ValueTask AddCards()
+    {
+        await _hubConnection.SendAsync("ImportCards", _customUrl);
     }
 }
