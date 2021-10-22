@@ -1,0 +1,19 @@
+﻿@if (ErrorMessage is not null)
+{
+    <div class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title modal-header-grid-item">An Error occured</h3>
+                    <button type="button" class="modal-close modal-header-grid-item" @onclick="@Close">
+                        <span>×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@ErrorMessage</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
