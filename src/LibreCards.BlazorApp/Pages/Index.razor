@@ -6,7 +6,7 @@
 }
 else
 {
-    <ErrorView ErrorMessage="@_errMessage" />
+    <ErrorDialog @bind-ErrorMessage="@_errMessage"/>
 
     <pre>@_state.Game.LocalPlayerState.ToString()</pre>
 
